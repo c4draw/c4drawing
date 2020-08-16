@@ -1,22 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./styles.css";
-import { useRef } from "react";
+import UserComponent from "./components/UserComponent";
 
 function App() {
   const autoCursor = "auto-cursor";
-  const grabCursor = "grab-cursor";
+  // const grabCursor = "grab-cursor";
   const grabbingCursor = "grabbing-cursor";
-  // const userElement = useRef(null);
+
+  const userElement = useRef({});
   const [mouseCursor, setMouseCursor] = useState("");
+  const [isGrabbing, setIsGrabbing] = useState(false);
 
   function setAutoCursor() {
     setMouseCursor(autoCursor);
   }
 
-  function setGrabCursor() {
-    // Should check if wants resize
-    setMouseCursor(grabCursor);
-  }
+  // function setGrabCursor() {
+  //   // Should check if wants resize
+  //   setMouseCursor(grabCursor);
+  // }
 
   function setGrabbingCursor() {
     setMouseCursor(grabbingCursor);
@@ -24,55 +26,36 @@ function App() {
 
   function handleMouseDown(event) {
     setGrabbingCursor();
-    console.log(event.clientX);
+    setIsGrabbing(true);
   }
 
-  function handleMouseMove(event) {}
+  function handleMouseUp(event) {
+    // setGrabCursor();
+    setIsGrabbing(false);
+  }
 
-  const [positionX, setPositionX] = useState(150);
-  const [positionY, setPositionY] = useState(50);
+  function handleMouseMove(event) {
+    event.preventDefault();
+    if (isGrabbing) {
+    }
+  }
 
   return (
     <div>
-      <input
-        type="number"
-        value={positionX}
-        onChange={(e) => {
-          console.log(e.target.value);
-          setPositionX(e.target.value);
-        }}
-      />
-      <input
-        type="number"
-        value={positionY}
-        onChange={(e) => setPositionY(e.target.value)}
-      />
-      <div className="board">
-        <div
-          className={`user ${mouseCursor}`}
-          // ref={userElement}
-          style={{ left: `${positionX}px`, top: `${positionY}px` }}
-        >
-          <div
-            className="head"
-            onMouseEnter={setGrabCursor}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={setGrabCursor}
-            onMouseLeave={setAutoCursor}
-          />
-          <div
-            className="body"
-            onMouseEnter={setGrabCursor}
-            onMouseDown={handleMouseDown}
-            onMouseUp={setGrabCursor}
-            onMouseLeave={setAutoCursor}
-          >
-            <h3>Personal Banking Customer</h3>
-            <span>[Person]</span>
-            <p>A customer of the bank, with personal bank accounts.</p>
-          </div>
-        </div>
+      <div className="grades">
+        <div className="vertical" />
+        <div className="horizontal" />
+      </div>
+      <div
+        className={`board ${mouseCursor}`}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+      >
+        <UserComponent
+          // setGrabCursor={setGrabCursor}
+          setAutoCursor={setAutoCursor}
+        />
       </div>
     </div>
   );
