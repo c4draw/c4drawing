@@ -1,63 +1,75 @@
-import React, { useState, useRef } from "react";
+import React, { useLayoutEffect, useState } from "react";
+import Draggable from "react-draggable";
+import rough from "roughjs/bundled/rough.esm";
+
 import "./styles.css";
-import UserComponent from "./components/UserComponent";
+
+const roughGenerator = rough.generator();
+
+function createElement(xStart, yStart, xEnd, yEnd) {
+  const roughElement = roughGenerator.line(xStart, yStart, xEnd, yEnd);
+  return { xStart, yStart, xEnd, yEnd, roughElement };
+}
 
 function App() {
-  const autoCursor = "auto-cursor";
-  // const grabCursor = "grab-cursor";
-  const grabbingCursor = "grabbing-cursor";
+  const [elements, setElements] = useState([]);
+  const [drawing, setDrawing] = useState(false);
 
-  const userElement = useRef({});
-  const [mouseCursor, setMouseCursor] = useState("");
-  const [isGrabbing, setIsGrabbing] = useState(false);
+  useLayoutEffect(() => {
+    const canvas = document.getElementById("canvas");
 
-  function setAutoCursor() {
-    setMouseCursor(autoCursor);
+    const canvasContext = canvas.getContext("2d");
+    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+
+    const roughCanvas = rough.canvas(canvas);
+
+    elements.forEach(({ roughElement }) => roughCanvas.draw(roughElement));
+  });
+
+  function handleOnMouseDown({ clientX, clientY }) {
+    setDrawing(true);
+
+    const newRoughElement = createElement(clientX, clientY, clientX, clientY);
+    setElements((prevState) => [...prevState, newRoughElement]);
   }
 
-  // function setGrabCursor() {
-  //   // Should check if wants resize
-  //   setMouseCursor(grabCursor);
-  // }
+  function handleOnMouseMove({ clientX: clientXEnd, clientY: clientYEnd }) {
+    if (!drawing) return;
 
-  function setGrabbingCursor() {
-    setMouseCursor(grabbingCursor);
+    const currentElementCreatedIndex = elements.length - 1;
+    const { xStart, yStart } = elements[currentElementCreatedIndex];
+
+    const updateCurrentElementCreated = createElement(
+      xStart,
+      yStart,
+      clientXEnd,
+      clientYEnd
+    );
+
+    const elementsWithLastCreated = [...elements];
+    elementsWithLastCreated[
+      currentElementCreatedIndex
+    ] = updateCurrentElementCreated;
+
+    setElements(elementsWithLastCreated);
   }
 
-  function handleMouseDown(event) {
-    setGrabbingCursor();
-    setIsGrabbing(true);
-  }
-
-  function handleMouseUp(event) {
-    // setGrabCursor();
-    setIsGrabbing(false);
-  }
-
-  function handleMouseMove(event) {
-    event.preventDefault();
-    if (isGrabbing) {
-    }
+  function handleOnMouseUp() {
+    setDrawing(false);
   }
 
   return (
-    <div>
-      <div className="grades">
-        <div className="vertical" />
-        <div className="horizontal" />
-      </div>
-      <div
-        className={`board ${mouseCursor}`}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
-      >
-        <UserComponent
-          // setGrabCursor={setGrabCursor}
-          setAutoCursor={setAutoCursor}
-        />
-      </div>
-    </div>
+    <canvas
+      id="canvas"
+      width={window.innerWidth}
+      height={window.innerHeight}
+      onMouseUp={handleOnMouseUp}
+      onMouseDown={handleOnMouseDown}
+      onMouseMove={handleOnMouseMove}
+      style={{ backgroundColors: "blue" }}
+    >
+      Canvas
+    </canvas>
   );
 }
 
