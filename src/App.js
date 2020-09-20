@@ -6,14 +6,19 @@ import "./styles.css";
 
 const roughGenerator = rough.generator();
 
-function createElement(xStart, yStart, xEnd, yEnd) {
-  const roughElement = roughGenerator.line(xStart, yStart, xEnd, yEnd);
-  return { xStart, yStart, xEnd, yEnd, roughElement };
-}
+// function createElement(xStart, yStart, xEnd, yEnd, roughElementType) {
+//   const roughElement =
+//     roughElementType === "line"
+//       ? roughGenerator.line(xStart, yStart, xEnd, yEnd)
+//       : roughGenerator.rectangle(xStart, yStart, xEnd - xStart, yEnd - yStart);
+
+//   return { xStart, yStart, xEnd, yEnd, roughElement };
+// }
 
 function App() {
   const [elements, setElements] = useState([]);
   const [drawing, setDrawing] = useState(false);
+  const [elementType, setElementType] = useState("line");
 
   useLayoutEffect(() => {
     const canvas = document.getElementById("canvas");
@@ -24,12 +29,27 @@ function App() {
     const roughCanvas = rough.canvas(canvas);
 
     elements.forEach(({ roughElement }) => roughCanvas.draw(roughElement));
-  });
+  }, [elements]);
+
+  function createElement(xStart, yStart, xEnd, yEnd) {
+    const roughElement =
+      elementType === "line"
+        ? roughGenerator.line(xStart, yStart, xEnd, yEnd)
+        : roughGenerator.rectangle(
+            xStart,
+            yStart,
+            xEnd - xStart,
+            yEnd - yStart
+          );
+
+    return { xStart, yStart, xEnd, yEnd, roughElement };
+  }
 
   function handleOnMouseDown({ clientX, clientY }) {
     setDrawing(true);
 
     const newRoughElement = createElement(clientX, clientY, clientX, clientY);
+
     setElements((prevState) => [...prevState, newRoughElement]);
   }
 
@@ -59,17 +79,34 @@ function App() {
   }
 
   return (
-    <canvas
-      id="canvas"
-      width={window.innerWidth}
-      height={window.innerHeight}
-      onMouseUp={handleOnMouseUp}
-      onMouseDown={handleOnMouseDown}
-      onMouseMove={handleOnMouseMove}
-      style={{ backgroundColors: "blue" }}
-    >
-      Canvas
-    </canvas>
+    <div>
+      <div style={{ position: "fixed" }}>
+        <input
+          type="radio"
+          id="line"
+          checked={elementType === "line"}
+          onChange={() => setElementType("line")}
+        />
+        <label htmlFor="line">Line</label>
+        <input
+          type="radio"
+          id="rectangle"
+          checked={elementType === "rectangle"}
+          onChange={() => setElementType("rectangle")}
+        />
+        <label htmlFor="rectangle">Rectangle</label>
+      </div>
+      <canvas
+        id="canvas"
+        width={window.innerWidth}
+        height={window.innerHeight}
+        onMouseUp={handleOnMouseUp}
+        onMouseDown={handleOnMouseDown}
+        onMouseMove={handleOnMouseMove}
+      >
+        Canvas
+      </canvas>
+    </div>
   );
 }
 
