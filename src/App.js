@@ -5,15 +5,6 @@ import "./styles.css";
 
 const roughGenerator = rough.generator();
 
-// function createElement(xStart, yStart, xEnd, yEnd, roughElementType) {
-//   const roughElement =
-//     roughElementType === "line"
-//       ? roughGenerator.line(xStart, yStart, xEnd, yEnd)
-//       : roughGenerator.rectangle(xStart, yStart, xEnd - xStart, yEnd - yStart);
-
-//   return { xStart, yStart, xEnd, yEnd, roughElement };
-// }
-
 function App() {
   const [elements, setElements] = useState([]);
   const [drawing, setDrawing] = useState(false);
