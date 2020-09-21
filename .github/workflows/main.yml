@@ -7,9 +7,6 @@ on:
     paths-ignore:
       - ".github/**"
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
   build:
     runs-on: ubuntu-latest
     steps:
