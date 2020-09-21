@@ -1,62 +1,111 @@
-import React, { useState, useRef } from "react";
+import React, { useLayoutEffect, useState } from "react";
+import Draggable from "react-draggable";
+import rough from "roughjs/bundled/rough.esm";
+
 import "./styles.css";
-import UserComponent from "./components/UserComponent";
+
+const roughGenerator = rough.generator();
+
+// function createElement(xStart, yStart, xEnd, yEnd, roughElementType) {
+//   const roughElement =
+//     roughElementType === "line"
+//       ? roughGenerator.line(xStart, yStart, xEnd, yEnd)
+//       : roughGenerator.rectangle(xStart, yStart, xEnd - xStart, yEnd - yStart);
+
+//   return { xStart, yStart, xEnd, yEnd, roughElement };
+// }
 
 function App() {
-  const autoCursor = "auto-cursor";
-  // const grabCursor = "grab-cursor";
-  const grabbingCursor = "grabbing-cursor";
+  const [elements, setElements] = useState([]);
+  const [drawing, setDrawing] = useState(false);
+  const [elementType, setElementType] = useState("line");
 
-  const userElement = useRef({});
-  const [mouseCursor, setMouseCursor] = useState("");
-  const [isGrabbing, setIsGrabbing] = useState(false);
+  useLayoutEffect(() => {
+    const canvas = document.getElementById("canvas");
 
-  function setAutoCursor() {
-    setMouseCursor(autoCursor);
+    const canvasContext = canvas.getContext("2d");
+    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+
+    const roughCanvas = rough.canvas(canvas);
+
+    elements.forEach(({ roughElement }) => roughCanvas.draw(roughElement));
+  }, [elements]);
+
+  function createElement(xStart, yStart, xEnd, yEnd) {
+    const roughElement =
+      elementType === "line"
+        ? roughGenerator.line(xStart, yStart, xEnd, yEnd)
+        : roughGenerator.rectangle(
+            xStart,
+            yStart,
+            xEnd - xStart,
+            yEnd - yStart
+          );
+
+    return { xStart, yStart, xEnd, yEnd, roughElement };
   }
 
-  // function setGrabCursor() {
-  //   // Should check if wants resize
-  //   setMouseCursor(grabCursor);
-  // }
+  function handleOnMouseDown({ clientX, clientY }) {
+    setDrawing(true);
 
-  function setGrabbingCursor() {
-    setMouseCursor(grabbingCursor);
+    const newRoughElement = createElement(clientX, clientY, clientX, clientY);
+
+    setElements((prevState) => [...prevState, newRoughElement]);
   }
 
-  function handleMouseDown(event) {
-    setGrabbingCursor();
-    setIsGrabbing(true);
+  function handleOnMouseMove({ clientX: clientXEnd, clientY: clientYEnd }) {
+    if (!drawing) return;
+
+    const currentElementCreatedIndex = elements.length - 1;
+    const { xStart, yStart } = elements[currentElementCreatedIndex];
+
+    const updateCurrentElementCreated = createElement(
+      xStart,
+      yStart,
+      clientXEnd,
+      clientYEnd
+    );
+
+    const elementsWithLastCreated = [...elements];
+    elementsWithLastCreated[
+      currentElementCreatedIndex
+    ] = updateCurrentElementCreated;
+
+    setElements(elementsWithLastCreated);
   }
 
-  function handleMouseUp(event) {
-    // setGrabCursor();
-    setIsGrabbing(false);
-  }
-
-  function handleMouseMove(event) {
-    event.preventDefault();
-    if (isGrabbing) {
-    }
+  function handleOnMouseUp() {
+    setDrawing(false);
   }
 
   return (
     <div>
-      <div className="grades">
-        <div className="vertical" />
-        <div className="horizontal" />
-      </div>
-      <div
-        className={`board ${mouseCursor}`}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
-      >
-        <UserComponent
-          // setGrabCursor={setGrabCursor}
-          setAutoCursor={setAutoCursor}
+      <div style={{ position: "fixed" }}>
+        <input
+          type="radio"
+          id="line"
+          checked={elementType === "line"}
+          onChange={() => setElementType("line")}
         />
+        <label htmlFor="line">Line</label>
+        <input
+          type="radio"
+          id="rectangle"
+          checked={elementType === "rectangle"}
+          onChange={() => setElementType("rectangle")}
+        />
+        <label htmlFor="rectangle">Rectangle</label>
       </div>
+      <canvas
+        id="canvas"
+        width={window.innerWidth}
+        height={window.innerHeight}
+        onMouseUp={handleOnMouseUp}
+        onMouseDown={handleOnMouseDown}
+        onMouseMove={handleOnMouseMove}
+      >
+        Canvas
+      </canvas>
     </div>
   );
 }
