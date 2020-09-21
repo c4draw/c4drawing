@@ -94,7 +94,7 @@ function App() {
         onMouseDown={handleOnMouseDown}
         onMouseMove={handleOnMouseMove}
       >
-        Canvas
+        Canvass
       </canvas>
     </div>
   );

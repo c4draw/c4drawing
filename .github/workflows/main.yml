@@ -12,6 +12,6 @@ jobs:
         env:
           NETFLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETFLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        run: yarn install
+        run: yarn add
           yarn build
           npx netlify-cli deploy --dir=public --prod
