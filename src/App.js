@@ -1,5 +1,4 @@
 import React, { useLayoutEffect, useState } from "react";
-import Draggable from "react-draggable";
 import rough from "roughjs/bundled/rough.esm";
 
 import "./styles.css";
