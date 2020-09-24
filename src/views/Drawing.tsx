@@ -13,7 +13,8 @@ function Drawing() {
 
   useLayoutEffect(() => {
     const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-    const canvasContext = canvas.getContext("2d") || ({} as any);
+    const canvasContext =
+      canvas.getContext("2d") || ({} as CanvasRenderingContext2D);
 
     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
 
