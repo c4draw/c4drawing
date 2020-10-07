@@ -1,4 +1,5 @@
-import React, { useLayoutEffect, useState } from "react";
+import React from "react";
+import { useLayoutEffect, useState } from "react";
 import { ElementType } from "../constants/elementType";
 import { ELementWhiteboardDrawing } from "../types/elementWhiteboardDrawing";
 
@@ -20,7 +21,9 @@ function Drawing() {
 
     const roughCanvas = rough.canvas(canvas);
 
-    elements.forEach(({ roughElement }) => roughCanvas.draw(roughElement));
+    elements.forEach(({ roughElement }: ELementWhiteboardDrawing) => {
+      roughCanvas.draw(roughElement);
+    });
   }, [elements]);
 
   function createElement(
@@ -51,9 +54,8 @@ function Drawing() {
       event.clientY,
       event.clientX
     );
-    console.log(newRoughElement);
 
-    setElements((prevState) => [...prevState, newRoughElement]);
+    setElements([...elements, newRoughElement]);
   }
 
   function handleOnMouseMove(event: React.MouseEvent) {
