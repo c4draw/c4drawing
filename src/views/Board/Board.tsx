@@ -1,10 +1,12 @@
-import React, { useLayoutEffect, useState } from "react";
-import { ElementType } from "../constants/elementType";
-import { ELementWhiteboardDrawing } from "../types/elementWhiteboardDrawing";
+import './styles.css';
 
-import rough from "roughjs/bundled/rough.esm";
+import React, { useLayoutEffect, useState } from 'react';
+import rough from 'roughjs/bundled/rough.esm';
 
-function Drawing() {
+import { ElementType } from '../../constants/elementType';
+import { ELementWhiteboardDrawing } from '../../types/elementWhiteboardDrawing';
+
+const Board = () => {
   const [elements, setElements] = useState<Array<ELementWhiteboardDrawing>>([]);
   const [drawing, setDrawing] = useState(false);
   const [elementType, setElementType] = useState(ElementType.LINE);
@@ -83,7 +85,7 @@ function Drawing() {
   }
 
   return (
-    <div>
+    <div id="board" className="fade-in">
       <div style={{ position: "fixed" }}>
         <input
           type="radio"
@@ -112,6 +114,6 @@ function Drawing() {
       </canvas>
     </div>
   );
-}
+};
 
-export default Drawing;
+export default Board;
