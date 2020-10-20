@@ -53,7 +53,6 @@ const Board = () => {
       event.clientY,
       event.clientX
     );
-    console.log(newRoughElement);
 
     setElements((prevState) => [...prevState, newRoughElement]);
   }
