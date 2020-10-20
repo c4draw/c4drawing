@@ -70,3 +70,30 @@ input:focus {
   border-radius: 10px;
   border: 1px solid #555;
 }
+
+form button {
+  color: #333;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  border: 1px solid #fff;
+}
+
+form button[type="button"] {
+  color: #333;
+  cursor: pointer;
+  outline: none;
+  transition: 500ms;
+  border: 1px solid #333;
+  background-color: #d3d3d3;
+}
+
+form button[type="submit"] {
+  cursor: pointer;
+  outline: none;
+  transition: 500ms;
+  color: #fff;
+  margin-left: 4px;
+  border: 1px solid #333;
+  background-color: #333;
+}

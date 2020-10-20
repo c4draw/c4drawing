@@ -15,7 +15,7 @@ const Landing = () => {
           </div>
           <div className="links">
             <Link to={RoutesPath.Login}>Login</Link>
-            <Link to={RoutesPath.Landing} className="highlighted">
+            <Link to={RoutesPath.Register} className="highlighted">
               Registre-se
             </Link>
           </div>

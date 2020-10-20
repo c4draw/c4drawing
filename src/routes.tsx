@@ -6,6 +6,7 @@ import Board from './views/Board';
 import Styles from './views/ConfiguratedStyles';
 import Landing from './views/Landing';
 import Login from './views/Login';
+import Register from './views/Register';
 
 const Routes = () => {
   return (
@@ -15,6 +16,7 @@ const Routes = () => {
         <Route path={RoutesPath.Board} component={Board} />
         <Route path={RoutesPath.Styles} component={Styles} />
         <Route path={RoutesPath.Login} component={Login} />
+        <Route path={RoutesPath.Register} component={Register} />
       </Switch>
     </BrowserRouter>
   );
