@@ -26,6 +26,7 @@
 - Commitlint
 - Commitizen
 - Husky
+- Amazon Cognito
 
 ### Installation
 
