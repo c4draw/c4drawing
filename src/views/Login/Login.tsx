@@ -1,7 +1,9 @@
 import './styles.css';
 
+import { ICognitoUserSessionData } from 'amazon-cognito-identity-js';
 import React, { SyntheticEvent, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import cognito from 'services/cognito';
 
 import { RoutesPath } from '../../enums/routesPath';
 
@@ -12,9 +14,24 @@ const Login = () => {
 
   function handleLogin(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
-    console.log("✔️ Login with success!");
-    history.push(RoutesPath.Board);
+
+    cognito.Authenticate(
+      email,
+      password,
+      handleOnSuccesAuth,
+      handleOnErrorAuth
+    );
+
+    // history.push(RoutesPath.Board);
   }
+
+  const handleOnSuccesAuth = (session: ICognitoUserSessionData) => {
+    console.log("✔️ Login with success: ", JSON.stringify(session));
+  };
+
+  const handleOnErrorAuth = (err: any) => {
+    console.log("❌  Error on login: ", JSON.stringify(err));
+  };
 
   const handleRegister = () => {
     history.push(RoutesPath.Register);
