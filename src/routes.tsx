@@ -5,6 +5,7 @@ import { RoutesPath } from './enums/routesPath';
 import Board from './views/Board';
 import Styles from './views/ConfiguratedStyles';
 import Landing from './views/Landing';
+import Login from './views/Login';
 
 const Routes = () => {
   return (
@@ -13,6 +14,7 @@ const Routes = () => {
         <Route path={RoutesPath.Landing} exact component={Landing} />
         <Route path={RoutesPath.Board} component={Board} />
         <Route path={RoutesPath.Styles} component={Styles} />
+        <Route path={RoutesPath.Login} component={Login} />
       </Switch>
     </BrowserRouter>
   );

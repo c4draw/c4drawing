@@ -14,7 +14,7 @@ const Landing = () => {
             <Link to={RoutesPath.Landing}>C4Drawing</Link>
           </div>
           <div className="links">
-            <Link to={RoutesPath.Landing}>Login</Link>
+            <Link to={RoutesPath.Login}>Login</Link>
             <Link to={RoutesPath.Landing} className="highlighted">
               Registre-se
             </Link>
