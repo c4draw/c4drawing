@@ -3,6 +3,10 @@ import "./styles.css";
 import React, { useLayoutEffect, useState } from "react";
 import rough from "roughjs/bundled/rough.esm";
 
+import mouseSVG from "../../assets/svg/mouse.svg";
+import lineSVG from "../../assets/svg/line.svg";
+import squareSVG from "../../assets/svg/square.svg";
+
 import { ToolType } from "../../constants/toolType";
 import { ElementWhiteboardDrawing } from "../../types/elementWhiteboardDrawing";
 import { ActionType } from "../../constants/actionType";
@@ -370,28 +374,31 @@ function Board() {
 
   return (
     <div id="board" className="fade-in">
-      <div style={{ position: "fixed" }}>
-        <input
-          type="radio"
-          id="line"
-          checked={tool === ToolType.SELECTION}
-          onChange={() => setTool(ToolType.SELECTION)}
-        />
-        <label htmlFor="line">Selection</label>
-        <input
-          type="radio"
-          id="line"
-          checked={tool === ToolType.LINE}
-          onChange={() => setTool(ToolType.LINE)}
-        />
-        <label htmlFor="line">Line</label>
-        <input
-          type="radio"
-          id="rectangle"
-          checked={tool === ToolType.RECTANGLE}
-          onChange={() => setTool(ToolType.RECTANGLE)}
-        />
-        <label htmlFor="rectangle">Rectangle</label>
+      <div className="tool-box">
+        <div
+          className={`button-selection ${
+            tool === ToolType.SELECTION && "button-selection-selected"
+          }`}
+          onClick={() => setTool(ToolType.SELECTION)}
+        >
+          <img src={mouseSVG} alt="Selecionar..." />
+        </div>
+        <div
+          className={`button-selection ${
+            tool === ToolType.LINE && "button-selection-selected"
+          }`}
+          onClick={() => setTool(ToolType.LINE)}
+        >
+          <img src={lineSVG} alt="Linha" />
+        </div>
+        <div
+          className={`button-selection ${
+            tool === ToolType.RECTANGLE && "button-selection-selected"
+          }`}
+          onClick={() => setTool(ToolType.RECTANGLE)}
+        >
+          <img src={squareSVG} alt="Quadrado" />
+        </div>
       </div>
       <canvas
         id="canvas"
