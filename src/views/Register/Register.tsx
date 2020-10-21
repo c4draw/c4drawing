@@ -1,9 +1,9 @@
 import './styles.css';
 
+import { RoutesPath } from 'enums/routesPath';
 import React, { SyntheticEvent, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-
-import { RoutesPath } from '../../enums/routesPath';
+import cognito from 'services/cognito';
 
 const Register = () => {
   const history = useHistory();
@@ -12,8 +12,19 @@ const Register = () => {
 
   function handleRegister(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
-    console.log("✔️ Register with success!");
-    history.push(RoutesPath.Board);
+
+    // console.log("✔️ Register with success!");
+    cognito.Register(email, password, handleRegisterCallback);
+    // history.push(RoutesPath.Board);
+  }
+
+  function handleRegisterCallback(error: any, result: any) {
+    if (error) {
+      console.log("❌ Error on sign-up:", JSON.stringify(error));
+      alert(error.message);
+      return;
+    }
+    console.log("✔️ Sign-up with success: " + JSON.stringify(result));
   }
 
   const handleReturnToLogin = (event: SyntheticEvent) => {
@@ -45,7 +56,7 @@ const Register = () => {
           <input
             type="email"
             required={true}
-            placeholder="e-mail"
+            placeholder="username"
             value={email}
             onChange={handleEmailOnChange}
           />
