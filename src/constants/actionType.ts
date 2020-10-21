@@ -1,5 +1,6 @@
 export const ActionType = {
     DEFAULT: "none",
     MOVING: "moving",
-    DRAWING: "drawing"
+    DRAWING: "drawing",
+    RESIZING: "resizing"
 }
