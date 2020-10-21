@@ -1,4 +1,4 @@
-import { CognitoUserPool } from 'amazon-cognito-identity-js';
+import { CognitoUser, CognitoUserPool } from "amazon-cognito-identity-js";
 
 const defaultPoolDataValue = "unset";
 
@@ -9,4 +9,12 @@ const poolData = {
 
 const cognitoUserPool = new CognitoUserPool(poolData);
 
+function getCognitoClient(email: string) {
+  return new CognitoUser({
+    Username: email,
+    Pool: cognitoUserPool,
+  });
+}
+
 export default cognitoUserPool;
+export { getCognitoClient };
