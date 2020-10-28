@@ -14,7 +14,7 @@ const Register = lazy(() => import("./views/Register"));
 const Routes = () => {
   return (
     <BrowserRouter>
-      <Suspense fallback={Loading}>
+      <Suspense fallback={<Loading />}>
         <Switch>
           <Route path={RoutesPath.Landing} exact component={Landing} />
           <Route path={RoutesPath.Board} component={Board} />
