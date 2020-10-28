@@ -1,17 +1,16 @@
 import {
   AuthenticationDetails,
   ClientMetadata,
-  CognitoUser,
   CognitoUserAttribute,
   ISignUpResult,
   NodeCallback,
-} from 'amazon-cognito-identity-js';
-import cognitoUserPool from 'config/cognitoUserPool';
+} from "amazon-cognito-identity-js";
+import cognitoUserPool, { getCognitoClient } from "config/cognitoUserPool";
 
 const userAttributes: CognitoUserAttribute[] = [];
 const validationData: CognitoUserAttribute[] = [];
 
-function Register(
+function register(
   username: string,
   password: string,
   callback: NodeCallback<Error, ISignUpResult>,
@@ -27,16 +26,13 @@ function Register(
   );
 }
 
-function Authenticate(
+function authenticate(
   username: string,
   password: string,
   onSuccess: any,
   onFailure: any
 ) {
-  const cognitoClient = new CognitoUser({
-    Username: username,
-    Pool: cognitoUserPool,
-  });
+  const cognitoClient = getCognitoClient(username);
 
   const authData = new AuthenticationDetails({
     Username: username,
@@ -46,4 +42,19 @@ function Authenticate(
   cognitoClient.authenticateUser(authData, { onSuccess, onFailure });
 }
 
-export default { Register, Authenticate };
+function confirmRegistration(
+  email: string,
+  confirmationCode: string,
+  callback: NodeCallback<Error, ISignUpResult>
+) {
+  const cognitoClient = getCognitoClient(email);
+
+  const forceAliasCreation = true;
+  cognitoClient.confirmRegistration(
+    confirmationCode,
+    forceAliasCreation,
+    callback
+  );
+}
+
+export default { register, authenticate, confirmRegistration };
