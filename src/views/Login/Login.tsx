@@ -1,11 +1,11 @@
-import './styles.css';
+import "./styles.css";
 
-import { ICognitoUserSessionData } from 'amazon-cognito-identity-js';
-import React, { SyntheticEvent, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
-import cognito from 'services/cognito';
+import { ICognitoUserSessionData } from "amazon-cognito-identity-js";
+import React, { SyntheticEvent, useState } from "react";
+import { Link, useHistory } from "react-router-dom";
+import cognito from "services/cognito";
 
-import { RoutesPath } from '../../enums/routesPath';
+import { RoutesPath } from "../../enums/routesPath";
 
 const Login = () => {
   const history = useHistory();
@@ -15,7 +15,7 @@ const Login = () => {
   function handleLogin(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    cognito.Authenticate(
+    cognito.authenticate(
       email,
       password,
       handleOnSuccesAuth,
