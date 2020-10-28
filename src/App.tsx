@@ -1,13 +1,11 @@
-import React from "react";
-import "./App.css";
-import Drawing from "./views/Drawing";
+import './global.css';
+
+import React from 'react';
+
+import Routes from './routes';
 
 function App() {
-  return (
-    <div className="App">
-      <Drawing />
-    </div>
-  );
+  return <Routes />;
 }
 
 export default App;
