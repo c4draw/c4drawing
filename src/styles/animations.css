@@ -23,3 +23,16 @@
 .fade-out {
   animation: fadeOut ease 1s;
 }
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotate {
+  animation: rotation 2s linear infinite;
+}
