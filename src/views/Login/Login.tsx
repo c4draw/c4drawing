@@ -57,7 +57,7 @@ const Login = () => {
         <form onSubmit={handleLogin}>
           <h1>C4Drawing</h1>
           <p>
-            porque desenhos de arquitetura de software não precisam ser
+            Porque desenhos de arquitetura de software não precisam ser
             complicados.
           </p>
           <input

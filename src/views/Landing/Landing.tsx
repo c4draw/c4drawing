@@ -24,7 +24,7 @@ const Landing = () => {
         <div className="content">
           <h1>C4Drawing</h1>
           <p>
-            porque desenhos de arquitetura de software não precisam ser
+            Porque desenhos de arquitetura de software não precisam ser
             complicados.
           </p>
           <Link to={RoutesPath.Board}>

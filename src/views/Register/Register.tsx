@@ -49,13 +49,13 @@ const Register = () => {
 
         <form onSubmit={handleRegister}>
           <h1>C4Drawing</h1>
-          <p>
+          <p className="text-before-form">
             Após o cadastro você será redirecionado para o seu painel de boards
           </p>
           <input
             type="email"
             required={true}
-            placeholder="username"
+            placeholder="e-mail"
             value={email}
             onChange={handleEmailOnChange}
           />
@@ -73,7 +73,7 @@ const Register = () => {
             <button type="button" onClick={handleReturnToLogin}>
               voltar
             </button>
-            <button type="submit">register</button>
+            <button type="submit">registrar-se</button>
           </div>
         </form>
       </div>
