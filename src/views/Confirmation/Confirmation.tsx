@@ -1,9 +1,9 @@
-import "./styles.css";
+import './styles.css';
 
-import { RoutesPath } from "enums/routesPath";
-import React, { SyntheticEvent, useEffect, useState } from "react";
-import { Link, useHistory } from "react-router-dom";
-import cognito from "services/cognito";
+import { RoutesPath } from 'enums/routesPath';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
+import cognito from 'services/cognito';
 
 const Register = (props: any) => {
   const history = useHistory();
