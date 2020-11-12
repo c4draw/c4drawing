@@ -1,43 +1,15 @@
 import './styles.css';
 
 import React, { useLayoutEffect, useState } from 'react';
-import rough from 'roughjs/bundled/rough.esm';
 import { ActionType } from 'types/actionType';
 
 import { ToolType } from '../../constants/toolType';
 import { ElementWhiteboardDrawing } from '../../types/elementWhiteboardDrawing';
 import MouseUtils from './MouseUtils';
+import RoughUtils, { rough } from './RoughUtils';
 import ToolBox from './ToolBox';
 import ToolsActions from './ToolsActions';
 import { adjustElementCoordinates, getElementAtPosition } from './Utils';
-
-const roughGenerator = rough.generator();
-
-function createElement(
-  id: number,
-  xStart: number,
-  yStart: number,
-  xEnd: number,
-  yEnd: number,
-  toolType: string
-) {
-  let roughElement;
-
-  if (toolType === ToolType.LINE) {
-    roughElement = roughGenerator.line(xStart, yStart, xEnd, yEnd);
-  }
-
-  if (toolType === ToolType.RECTANGLE) {
-    roughElement = roughGenerator.rectangle(
-      xStart,
-      yStart,
-      xEnd - xStart,
-      yEnd - yStart
-    );
-  }
-
-  return { id, xStart, xEnd, yStart, yEnd, toolType, roughElement };
-}
 
 function Board() {
   const [elements, setElements] = useState<Array<ElementWhiteboardDrawing>>([]);
@@ -65,7 +37,7 @@ function Board() {
     yEnd: number,
     type: string
   ) {
-    const updateCurrentElementCreated = createElement(
+    const updateCurrentElementCreated = RoughUtils.createElement(
       id,
       xStart,
       yStart,
@@ -103,7 +75,7 @@ function Board() {
 
   function drawNewElement(event: React.MouseEvent) {
     const id = elements.length;
-    const newRoughElement = createElement(
+    const newRoughElement = RoughUtils.createElement(
       id,
       event.clientX,
       event.clientY,
