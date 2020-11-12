@@ -7,6 +7,7 @@ import { ActionType } from '../../constants/actionType';
 import { ToolType } from '../../constants/toolType';
 import { ElementWhiteboardDrawing } from '../../types/elementWhiteboardDrawing';
 import ToolBox from './ToolBox';
+import ToolsActions from './ToolsActions';
 
 const roughGenerator = rough.generator();
 
@@ -177,29 +178,29 @@ function cursorForPosition(position: string | null | undefined) {
   }
 }
 
-function resizedCoordinates(
-  clientX: number,
-  clientY: number,
-  position: string,
-  coordinates: { xStart: number; yStart: number; xEnd: number; yEnd: number }
-) {
-  const { xStart, yStart, xEnd, yEnd } = coordinates;
+// function resizedCoordinates(
+//   clientX: number,
+//   clientY: number,
+//   position: string,
+//   coordinates: { xStart: number; yStart: number; xEnd: number; yEnd: number }
+// ) {
+//   const { xStart, yStart, xEnd, yEnd } = coordinates;
 
-  switch (position) {
-    case "tl":
-    case "start":
-      return { xStart: clientX, yStart: clientY, xEnd, yEnd };
-    case "tr":
-      return { xStart, yStart: clientY, xEnd: clientX, yEnd };
-    case "bl":
-      return { xStart: clientX, yStart, xEnd, yEnd: clientY };
-    case "br":
-    case "end":
-      return { xStart, yStart, xEnd: clientX, yEnd: clientY };
-    default:
-      return null;
-  }
-}
+//   switch (position) {
+//     case "tl":
+//     case "start":
+//       return { xStart: clientX, yStart: clientY, xEnd, yEnd };
+//     case "tr":
+//       return { xStart, yStart: clientY, xEnd: clientX, yEnd };
+//     case "bl":
+//       return { xStart: clientX, yStart, xEnd, yEnd: clientY };
+//     case "br":
+//     case "end":
+//       return { xStart, yStart, xEnd: clientX, yEnd: clientY };
+//     default:
+//       return null;
+//   }
+// }
 
 function Board() {
   const [elements, setElements] = useState<Array<ElementWhiteboardDrawing>>([]);
@@ -279,6 +280,69 @@ function Board() {
     }
   }
 
+  // function handleOnMouseMove(event: any) {
+  //   if (tool === ToolType.SELECTION) {
+  //     const element = getElementAtPosition(
+  //       event.clientX,
+  //       event.clientY,
+  //       elements
+  //     );
+  //     event.target.style.cursor = element
+  //       ? cursorForPosition(element.position)
+  //       : "default";
+  //   }
+
+  //   if (action === ActionType.DRAWING) {
+  //     const currentElementCreatedIndex = elements.length - 1;
+  //     const { xStart, yStart } = elements[currentElementCreatedIndex];
+  //     const { clientX: clientXEnd, clientY: clientYEnd } = event;
+
+  //     updateElement(
+  //       currentElementCreatedIndex,
+  //       xStart,
+  //       yStart,
+  //       clientXEnd,
+  //       clientYEnd,
+  //       tool
+  //     );
+  //   } else if (action === ActionType.MOVING) {
+  //     const width = selectedElement.xEnd - selectedElement.xStart;
+  //     const height = selectedElement.yEnd - selectedElement.yStart;
+
+  //     const newX1 = event.clientX - selectedElement.offsetX;
+  //     const newY1 = event.clientY - selectedElement.offsetY;
+
+  //     updateElement(
+  //       selectedElement.id,
+  //       newX1,
+  //       newY1,
+  //       newX1 + width,
+  //       newY1 + height,
+  //       selectedElement.toolType
+  //     );
+  //   } else if (action === ActionType.RESIZING) {
+  //     const { id, type, position, ...coordinates } = selectedElement;
+
+  //     const coordinatesResized = resizedCoordinates(
+  //       event.clientX,
+  //       event.clientY,
+  //       position,
+  //       coordinates
+  //     );
+
+  //     if (!coordinatesResized) return;
+
+  //     updateElement(
+  //       id,
+  //       coordinatesResized.xStart,
+  //       coordinatesResized.yStart,
+  //       coordinatesResized.xEnd,
+  //       coordinatesResized.yEnd,
+  //       selectedElement.toolType
+  //     );
+  //   }
+  // }
+
   function handleOnMouseMove(event: any) {
     if (tool === ToolType.SELECTION) {
       const element = getElementAtPosition(
@@ -291,55 +355,43 @@ function Board() {
         : "default";
     }
 
+    let shouldUpdateElement = false;
+    let elmt = {
+      id: 0,
+      xStart: 0,
+      yStart: 0,
+      xEnd: 0,
+      yEnd: 0,
+      type: "",
+    };
+
     if (action === ActionType.DRAWING) {
-      const currentElementCreatedIndex = elements.length - 1;
-      const { xStart, yStart } = elements[currentElementCreatedIndex];
-      const { clientX: clientXEnd, clientY: clientYEnd } = event;
-
-      updateElement(
-        currentElementCreatedIndex,
-        xStart,
-        yStart,
-        clientXEnd,
-        clientYEnd,
-        tool
-      );
+      shouldUpdateElement = true;
+      elmt = ToolsActions.drawing({ event, tool, elements, selectedElement });
     } else if (action === ActionType.MOVING) {
-      const width = selectedElement.xEnd - selectedElement.xStart;
-      const height = selectedElement.yEnd - selectedElement.yStart;
-
-      const newX1 = event.clientX - selectedElement.offsetX;
-      const newY1 = event.clientY - selectedElement.offsetY;
-
-      updateElement(
-        selectedElement.id,
-        newX1,
-        newY1,
-        newX1 + width,
-        newY1 + height,
-        selectedElement.toolType
-      );
+      shouldUpdateElement = true;
+      elmt = ToolsActions.moving({ event, tool, elements, selectedElement });
     } else if (action === ActionType.RESIZING) {
-      const { id, type, position, ...coordinates } = selectedElement;
+      const result = ToolsActions.resizing({
+        event,
+        tool,
+        elements,
+        selectedElement,
+      });
 
-      const coordinatesResized = resizedCoordinates(
-        event.clientX,
-        event.clientY,
-        position,
-        coordinates
-      );
-
-      if (!coordinatesResized) return;
-
-      updateElement(
-        id,
-        coordinatesResized.xStart,
-        coordinatesResized.yStart,
-        coordinatesResized.xEnd,
-        coordinatesResized.yEnd,
-        selectedElement.toolType
-      );
+      if (result) elmt = result;
+      shouldUpdateElement = !!result;
     }
+
+    if (shouldUpdateElement)
+      updateElement(
+        elmt.id,
+        elmt.xStart,
+        elmt.yStart,
+        elmt.xEnd,
+        elmt.yEnd,
+        elmt.type
+      );
   }
 
   function handleOnMouseUp() {
