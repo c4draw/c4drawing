@@ -2,12 +2,14 @@ import './styles.css';
 
 import React, { useLayoutEffect, useState } from 'react';
 import rough from 'roughjs/bundled/rough.esm';
+import { ActionType } from 'types/actionType';
 
-import { ActionType } from '../../constants/actionType';
 import { ToolType } from '../../constants/toolType';
 import { ElementWhiteboardDrawing } from '../../types/elementWhiteboardDrawing';
+import MouseUtils from './MouseUtils';
 import ToolBox from './ToolBox';
 import ToolsActions from './ToolsActions';
+import { adjustElementCoordinates, getElementAtPosition } from './Utils';
 
 const roughGenerator = rough.generator();
 
@@ -37,152 +39,9 @@ function createElement(
   return { id, xStart, xEnd, yStart, yEnd, toolType, roughElement };
 }
 
-function nearPoint(
-  clientX: number,
-  clientY: number,
-  clientXEnd: number,
-  clientYEnd: number,
-  pointName: string
-) {
-  return Math.abs(clientX - clientXEnd) < 5 &&
-    Math.abs(clientY - clientYEnd) < 5
-    ? pointName
-    : null;
-}
-
-function positionWithinElement(
-  clientX: number,
-  clientY: number,
-  element: ElementWhiteboardDrawing
-) {
-  if (element.toolType === ToolType.RECTANGLE) {
-    const topLeft = nearPoint(
-      clientX,
-      clientY,
-      element.xStart,
-      element.yStart,
-      "tl"
-    );
-    const topRight = nearPoint(
-      clientX,
-      clientY,
-      element.xEnd,
-      element.yStart,
-      "tr"
-    );
-    const bottomLeft = nearPoint(
-      clientX,
-      clientY,
-      element.xStart,
-      element.yEnd,
-      "bl"
-    );
-    const bottomRight = nearPoint(
-      clientX,
-      clientY,
-      element.xEnd,
-      element.yEnd,
-      "br"
-    );
-
-    const inside =
-      clientX >= element.xStart &&
-      clientX <= element.xEnd &&
-      clientY >= element.yStart &&
-      clientY <= element.yEnd
-        ? "inside"
-        : null;
-
-    return topLeft || topRight || bottomLeft || bottomRight || inside;
-  }
-
-  if (element.toolType === ToolType.LINE) {
-    const pointA = { x: element.xStart, y: element.yStart };
-    const pointB = { x: element.xEnd, y: element.yEnd };
-    const pointC = { x: clientX, y: clientY };
-
-    const offset =
-      distance(pointA, pointB) -
-      (distance(pointA, pointC) + distance(pointB, pointC));
-
-    const start = nearPoint(
-      clientX,
-      clientY,
-      element.xStart,
-      element.yStart,
-      "start"
-    );
-    const end = nearPoint(clientX, clientY, element.xEnd, element.yEnd, "end");
-
-    const inside = Math.abs(offset) < 1 ? "inside" : null;
-
-    return start || end || inside;
-  }
-}
-
-function distance(
-  pointA: { x: number; y: number },
-  pointB: { x: number; y: number }
-) {
-  return Math.sqrt(
-    Math.pow(pointA.x - pointB.x, 2) + Math.pow(pointA.y - pointB.y, 2)
-  );
-}
-
-function getElementAtPosition(
-  clientX: number,
-  clientY: number,
-  elements: ElementWhiteboardDrawing[]
-) {
-  return elements
-    .map((element) => ({
-      ...element,
-      position: positionWithinElement(clientX, clientY, element),
-    }))
-    .find((element) => element.position !== null);
-}
-
-function adjustElementCoordinates(element: ElementWhiteboardDrawing) {
-  const { toolType, xStart, xEnd, yStart, yEnd } = element;
-
-  if (toolType === ToolType.RECTANGLE) {
-    const minX = Math.min(xStart, xEnd);
-    const maxX = Math.max(xStart, xEnd);
-    const minY = Math.min(yStart, yEnd);
-    const maxY = Math.max(yStart, yEnd);
-
-    return { xStart: minX, yStart: minY, xEnd: maxX, yEnd: maxY };
-  }
-
-  if (toolType === ToolType.LINE) {
-    if (xStart < xEnd || (xStart === xEnd && yStart < yEnd)) {
-      return { xStart, yStart, xEnd, yEnd };
-    } else {
-      return { xStart: xEnd, yStart: yEnd, xEnd: xStart, yEnd: yStart };
-    }
-  }
-}
-
-function cursorForPosition(position: string | null | undefined) {
-  switch (position) {
-    case "tl":
-    case "br":
-    case "start":
-    case "end":
-      return "nwse-resize";
-    case "tr":
-    case "bl":
-      return "nesw-resize";
-    default:
-      return "move";
-  }
-}
-
 function Board() {
   const [elements, setElements] = useState<Array<ElementWhiteboardDrawing>>([]);
-  const [action, setAction] = useState<
-    "none" | "moving" | "drawing" | "resizing"
-  >("none");
+  const [action, setAction] = useState<ActionType>("none");
   const [selectedElement, setSelectedElement] = useState<any | null>(null);
   const [tool, setTool] = useState(ToolType.LINE);
 
@@ -221,55 +80,52 @@ function Board() {
     setElements(elementsWithLastCreated);
   }
 
-  function handleOnMouseDown(event: React.MouseEvent) {
-    if (tool === ToolType.SELECTION) {
-      const element = getElementAtPosition(
-        event.clientX,
-        event.clientY,
-        elements
-      );
+  function moveOrResizeSelectedElement(event: React.MouseEvent) {
+    const element = getElementAtPosition(
+      event.clientX,
+      event.clientY,
+      elements
+    );
 
-      if (element) {
-        const offsetX = event.clientX - element.xStart;
-        const offsetY = event.clientY - element.yStart;
+    if (element) {
+      const offsetX = event.clientX - element.xStart;
+      const offsetY = event.clientY - element.yStart;
 
-        setSelectedElement({ ...element, offsetX, offsetY });
+      setSelectedElement({ ...element, offsetX, offsetY });
 
-        if (element.position === "inside") {
-          setAction("moving");
-        } else {
-          setAction("resizing");
-        }
+      if (element.position === "inside") {
+        setAction("moving");
+      } else {
+        setAction("resizing");
       }
-    } else {
-      const id = elements.length;
-      const newRoughElement = createElement(
-        id,
-        event.clientX,
-        event.clientY,
-        event.clientX,
-        event.clientY,
-        tool
-      );
-
-      setElements((prevState) => [...prevState, newRoughElement]);
-      setSelectedElement(newRoughElement);
-      setAction("drawing");
     }
   }
 
-  function handleOnMouseMove(event: any) {
-    if (tool === ToolType.SELECTION) {
-      const element = getElementAtPosition(
-        event.clientX,
-        event.clientY,
-        elements
-      );
-      event.target.style.cursor = element
-        ? cursorForPosition(element.position)
-        : "default";
-    }
+  function drawNewElement(event: React.MouseEvent) {
+    const id = elements.length;
+    const newRoughElement = createElement(
+      id,
+      event.clientX,
+      event.clientY,
+      event.clientX,
+      event.clientY,
+      tool
+    );
 
+    setElements((prevState) => [...prevState, newRoughElement]);
+    setSelectedElement(newRoughElement);
+    setAction("drawing");
+  }
+
+  function handleOnMouseDown(event: React.MouseEvent) {
+    if (tool === ToolType.SELECTION) {
+      moveOrResizeSelectedElement(event);
+    } else {
+      drawNewElement(event);
+    }
+  }
+
+  function updateElementByAction(event: React.MouseEvent) {
     const toolAction = ToolsActions[action];
     const raisedElement = toolAction({
       event,
@@ -290,27 +146,35 @@ function Board() {
     }
   }
 
+  function handleOnMouseMove(event: React.MouseEvent) {
+    MouseUtils.setMouseStyleByTool(tool, event, elements);
+    updateElementByAction(event);
+  }
+
+  function updateSelectElementCoordinates() {
+    const index = selectedElement.id;
+    const { id, toolType } = elements[index];
+    const newElementCoods = adjustElementCoordinates(elements[index]);
+
+    if (!newElementCoods) return;
+
+    updateElement(
+      id,
+      newElementCoods.xStart,
+      newElementCoods.yStart,
+      newElementCoods.xEnd,
+      newElementCoods.yEnd,
+      toolType
+    );
+  }
+
   function handleOnMouseUp() {
     if (!selectedElement) return;
 
-    const index = selectedElement.id;
-    const { id, toolType } = elements[index];
+    const allowedActions: ActionType[] = ["drawing", "resizing"];
 
-    if (action === ActionType.DRAWING || action === ActionType.RESIZING) {
-      const elementCoordinatesAdjusted = adjustElementCoordinates(
-        elements[index]
-      );
-
-      if (!elementCoordinatesAdjusted) return;
-
-      updateElement(
-        id,
-        elementCoordinatesAdjusted.xStart,
-        elementCoordinatesAdjusted.yStart,
-        elementCoordinatesAdjusted.xEnd,
-        elementCoordinatesAdjusted.yEnd,
-        toolType
-      );
+    if (allowedActions.includes(action)) {
+      updateSelectElementCoordinates();
     }
 
     setAction("none");
