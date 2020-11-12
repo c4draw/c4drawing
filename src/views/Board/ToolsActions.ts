@@ -19,6 +19,9 @@ interface IElementInfo {
 }
 
 const ToolsActions = {
+  none: function name(params: any) {
+    return null;
+  },
   moving: function ({ event, selectedElement }: IToolsActionsProps) {
     const width = selectedElement.xEnd - selectedElement.xStart;
     const height = selectedElement.yEnd - selectedElement.yStart;

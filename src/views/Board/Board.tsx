@@ -178,33 +178,11 @@ function cursorForPosition(position: string | null | undefined) {
   }
 }
 
-// function resizedCoordinates(
-//   clientX: number,
-//   clientY: number,
-//   position: string,
-//   coordinates: { xStart: number; yStart: number; xEnd: number; yEnd: number }
-// ) {
-//   const { xStart, yStart, xEnd, yEnd } = coordinates;
-
-//   switch (position) {
-//     case "tl":
-//     case "start":
-//       return { xStart: clientX, yStart: clientY, xEnd, yEnd };
-//     case "tr":
-//       return { xStart, yStart: clientY, xEnd: clientX, yEnd };
-//     case "bl":
-//       return { xStart: clientX, yStart, xEnd, yEnd: clientY };
-//     case "br":
-//     case "end":
-//       return { xStart, yStart, xEnd: clientX, yEnd: clientY };
-//     default:
-//       return null;
-//   }
-// }
-
 function Board() {
   const [elements, setElements] = useState<Array<ElementWhiteboardDrawing>>([]);
-  const [action, setAction] = useState(ActionType.DEFAULT);
+  const [action, setAction] = useState<
+    "none" | "moving" | "drawing" | "resizing"
+  >("none");
   const [selectedElement, setSelectedElement] = useState<any | null>(null);
   const [tool, setTool] = useState(ToolType.LINE);
 
@@ -258,9 +236,9 @@ function Board() {
         setSelectedElement({ ...element, offsetX, offsetY });
 
         if (element.position === "inside") {
-          setAction(ActionType.MOVING);
+          setAction("moving");
         } else {
-          setAction(ActionType.RESIZING);
+          setAction("resizing");
         }
       }
     } else {
@@ -276,72 +254,9 @@ function Board() {
 
       setElements((prevState) => [...prevState, newRoughElement]);
       setSelectedElement(newRoughElement);
-      setAction(ActionType.DRAWING);
+      setAction("drawing");
     }
   }
-
-  // function handleOnMouseMove(event: any) {
-  //   if (tool === ToolType.SELECTION) {
-  //     const element = getElementAtPosition(
-  //       event.clientX,
-  //       event.clientY,
-  //       elements
-  //     );
-  //     event.target.style.cursor = element
-  //       ? cursorForPosition(element.position)
-  //       : "default";
-  //   }
-
-  //   if (action === ActionType.DRAWING) {
-  //     const currentElementCreatedIndex = elements.length - 1;
-  //     const { xStart, yStart } = elements[currentElementCreatedIndex];
-  //     const { clientX: clientXEnd, clientY: clientYEnd } = event;
-
-  //     updateElement(
-  //       currentElementCreatedIndex,
-  //       xStart,
-  //       yStart,
-  //       clientXEnd,
-  //       clientYEnd,
-  //       tool
-  //     );
-  //   } else if (action === ActionType.MOVING) {
-  //     const width = selectedElement.xEnd - selectedElement.xStart;
-  //     const height = selectedElement.yEnd - selectedElement.yStart;
-
-  //     const newX1 = event.clientX - selectedElement.offsetX;
-  //     const newY1 = event.clientY - selectedElement.offsetY;
-
-  //     updateElement(
-  //       selectedElement.id,
-  //       newX1,
-  //       newY1,
-  //       newX1 + width,
-  //       newY1 + height,
-  //       selectedElement.toolType
-  //     );
-  //   } else if (action === ActionType.RESIZING) {
-  //     const { id, type, position, ...coordinates } = selectedElement;
-
-  //     const coordinatesResized = resizedCoordinates(
-  //       event.clientX,
-  //       event.clientY,
-  //       position,
-  //       coordinates
-  //     );
-
-  //     if (!coordinatesResized) return;
-
-  //     updateElement(
-  //       id,
-  //       coordinatesResized.xStart,
-  //       coordinatesResized.yStart,
-  //       coordinatesResized.xEnd,
-  //       coordinatesResized.yEnd,
-  //       selectedElement.toolType
-  //     );
-  //   }
-  // }
 
   function handleOnMouseMove(event: any) {
     if (tool === ToolType.SELECTION) {
@@ -355,43 +270,24 @@ function Board() {
         : "default";
     }
 
-    let shouldUpdateElement = false;
-    let elmt = {
-      id: 0,
-      xStart: 0,
-      yStart: 0,
-      xEnd: 0,
-      yEnd: 0,
-      type: "",
-    };
+    const toolAction = ToolsActions[action];
+    const raisedElement = toolAction({
+      event,
+      tool,
+      elements,
+      selectedElement,
+    });
 
-    if (action === ActionType.DRAWING) {
-      shouldUpdateElement = true;
-      elmt = ToolsActions.drawing({ event, tool, elements, selectedElement });
-    } else if (action === ActionType.MOVING) {
-      shouldUpdateElement = true;
-      elmt = ToolsActions.moving({ event, tool, elements, selectedElement });
-    } else if (action === ActionType.RESIZING) {
-      const result = ToolsActions.resizing({
-        event,
-        tool,
-        elements,
-        selectedElement,
-      });
-
-      if (result) elmt = result;
-      shouldUpdateElement = !!result;
-    }
-
-    if (shouldUpdateElement)
+    if (raisedElement) {
       updateElement(
-        elmt.id,
-        elmt.xStart,
-        elmt.yStart,
-        elmt.xEnd,
-        elmt.yEnd,
-        elmt.type
+        raisedElement.id,
+        raisedElement.xStart,
+        raisedElement.yStart,
+        raisedElement.xEnd,
+        raisedElement.yEnd,
+        raisedElement.type
       );
+    }
   }
 
   function handleOnMouseUp() {
@@ -417,7 +313,7 @@ function Board() {
       );
     }
 
-    setAction(ActionType.DEFAULT);
+    setAction("none");
     setSelectedElement(null);
   }
 
