@@ -1,7 +1,7 @@
 import { ToolType } from 'constants/toolType';
 import { ElementWhiteboardDrawing } from 'types/elementWhiteboardDrawing';
 
-import { getElementAtPosition } from './Utils';
+import { getElementAtPosition } from './ElementUtils';
 
 function cursorForPosition(position: string | null | undefined) {
   switch (position) {

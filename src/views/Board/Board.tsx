@@ -5,11 +5,11 @@ import { ActionType } from 'types/actionType';
 
 import { ToolType } from '../../constants/toolType';
 import { ElementWhiteboardDrawing } from '../../types/elementWhiteboardDrawing';
-import MouseUtils from './MouseUtils';
-import RoughUtils, { rough } from './RoughUtils';
 import ToolBox from './ToolBox';
 import ToolsActions from './ToolsActions';
-import { adjustElementCoordinates, getElementAtPosition } from './Utils';
+import { adjustElementCoordinates, getElementAtPosition } from './Utils/ElementUtils';
+import MouseUtils from './Utils/MouseUtils';
+import RoughUtils, { rough } from './Utils/RoughUtils';
 
 function Board() {
   const [elements, setElements] = useState<Array<ElementWhiteboardDrawing>>([]);

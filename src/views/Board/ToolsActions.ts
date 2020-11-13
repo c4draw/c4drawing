@@ -1,6 +1,6 @@
 import { ElementWhiteboardDrawing } from 'types/elementWhiteboardDrawing';
 
-import { resizedCoordinates } from './Utils';
+import { resizedCoordinates } from './Utils/ElementUtils';
 
 interface IToolsActionsProps {
   event: any;
