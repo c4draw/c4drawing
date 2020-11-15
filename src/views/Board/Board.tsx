@@ -1,10 +1,11 @@
 import './styles.css';
 
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { ActionType } from 'types/actionType';
 
 import { ToolType } from '../../constants/toolType';
 import { ElementWhiteboardDrawing } from '../../types/elementWhiteboardDrawing';
+import { mockedElements } from './mock';
 import ToolBox from './ToolBox';
 import ToolsActions from './ToolsActions';
 import { adjustElementCoordinates, getElementAtPosition } from './Utils/ElementUtils';
@@ -13,6 +14,7 @@ import RoughUtils, { rough } from './Utils/RoughUtils';
 
 function Board() {
   const [elements, setElements] = useState<Array<ElementWhiteboardDrawing>>([]);
+  // const [elements, setElements] = useState<Array<DrawableElement>>([]);
   const [action, setAction] = useState<ActionType>("none");
   const [selectedElement, setSelectedElement] = useState<any | null>(null);
   const [tool, setTool] = useState(ToolType.LINE);
@@ -26,7 +28,15 @@ function Board() {
 
     const roughCanvas = rough.canvas(canvas);
 
-    elements.forEach(({ roughElement }) => roughCanvas.draw(roughElement));
+    elements.forEach(({ roughElement }) => {
+      if (roughElement) {
+        roughCanvas.draw(roughElement);
+      }
+    });
+
+    // elements.forEach((element: DrawableElement) => {
+    //   RoughUtils.drawElement(canvas, element);
+    // });
   }, [elements]);
 
   function updateElement(
@@ -73,6 +83,11 @@ function Board() {
     }
   }
 
+  function addNewElement(newRoughElement: any) {
+    setElements((prevState) => [...prevState, newRoughElement]);
+    setSelectedElement(newRoughElement);
+  }
+
   function drawNewElement(event: React.MouseEvent) {
     const id = elements.length;
     const newRoughElement = RoughUtils.createElement(
@@ -84,8 +99,7 @@ function Board() {
       tool
     );
 
-    setElements((prevState) => [...prevState, newRoughElement]);
-    setSelectedElement(newRoughElement);
+    addNewElement(newRoughElement);
     setAction("drawing");
   }
 
@@ -152,6 +166,30 @@ function Board() {
     setAction("none");
     setSelectedElement(null);
   }
+
+  function loadElements() {
+    // Posteriorly we'll search these elements from DynamoDB (not mocked)
+    mockedElements.forEach((element: any) => {
+      let newElement = element;
+
+      // if (element.toolType !== ToolType.Text) {
+      newElement = RoughUtils.createElement(
+        element.id,
+        element.xStart,
+        element.yStart,
+        element.xEnd,
+        element.yEnd,
+        element.toolType
+      );
+      // }
+
+      addNewElement(newElement);
+    });
+  }
+
+  useEffect(() => {
+    loadElements();
+  }, []);
 
   return (
     <div id="board" className="fade-in">

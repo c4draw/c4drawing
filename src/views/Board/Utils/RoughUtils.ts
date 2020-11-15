@@ -1,5 +1,8 @@
 import { ToolType } from 'constants/toolType';
 import rough from 'roughjs/bundled/rough.esm';
+import { DrawableElement } from 'types/DrawableElement';
+
+import RoughDrawer from './RoughDrawers';
 
 const roughGenerator = rough.generator();
 
@@ -28,6 +31,11 @@ const RoughUtils = {
     }
 
     return { id, xStart, xEnd, yStart, yEnd, toolType, roughElement };
+  },
+  drawElement: function (canvas: HTMLCanvasElement, element: DrawableElement) {
+    const { shape } = element;
+    const drawer = RoughDrawer[shape];
+    drawer({ canvas, element });
   },
 };
 
