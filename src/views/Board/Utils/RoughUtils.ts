@@ -1,8 +1,7 @@
-import { ToolType } from 'constants/toolType';
 import rough from 'roughjs/bundled/rough.esm';
 import { DrawableElement } from 'types/DrawableElement';
 
-import RoughDrawer from './RoughDrawers';
+import RoughDrawer from './RoughDrawer';
 
 const roughGenerator = rough.generator();
 
@@ -17,11 +16,11 @@ const RoughUtils = {
   ) {
     let roughElement;
 
-    if (toolType === ToolType.LINE) {
+    if (toolType === "line") {
       roughElement = roughGenerator.line(xStart, yStart, xEnd, yEnd);
     }
 
-    if (toolType === ToolType.RECTANGLE) {
+    if (toolType === "rectangle") {
       roughElement = roughGenerator.rectangle(
         xStart,
         yStart,
@@ -30,12 +29,20 @@ const RoughUtils = {
       );
     }
 
-    return { id, xStart, xEnd, yStart, yEnd, toolType, roughElement };
+    // return { id, xStart, xEnd, yStart, yEnd, toolType, roughElement };
+    return roughElement;
   },
   drawElement: function (canvas: HTMLCanvasElement, element: DrawableElement) {
+    if (!element) return;
     const { shape } = element;
     const drawer = RoughDrawer[shape];
-    drawer({ canvas, element });
+
+    if (!drawer) {
+      throw Error(`"${shape}" is not recognized as a RoughDrawer.ts function.`);
+    }
+
+    const roughCanvas = rough.canvas(canvas);
+    drawer({ roughCanvas, element });
   },
 };
 

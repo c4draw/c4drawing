@@ -3,4 +3,6 @@ export interface Coords {
   xEnd: number;
   yStart: number;
   yEnd: number;
+  offsetX?: number;
+  offsetY?: number;
 }

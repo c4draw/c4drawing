@@ -1,13 +1,13 @@
 import React from 'react';
+import { ToolType } from 'types/ToolType';
 
 import lineSVG from '../../assets/svg/line.svg';
 import mouseSVG from '../../assets/svg/mouse.svg';
 import squareSVG from '../../assets/svg/square.svg';
-import { ToolType } from '../../constants/toolType';
 
 interface IToolBoxProps {
-  tool: string;
-  setTool: React.Dispatch<React.SetStateAction<string>>;
+  tool: ToolType;
+  setTool: React.Dispatch<React.SetStateAction<ToolType>>;
 }
 
 const ToolBox: React.FC<IToolBoxProps> = ({ tool, setTool }) => {
@@ -15,25 +15,25 @@ const ToolBox: React.FC<IToolBoxProps> = ({ tool, setTool }) => {
     <div className="tool-box">
       <div
         className={`button-selection ${
-          tool === ToolType.SELECTION && "button-selection-selected"
+          tool === "selection" && "button-selection-selected"
         }`}
-        onClick={() => setTool(ToolType.SELECTION)}
+        onClick={() => setTool("selection")}
       >
         <img src={mouseSVG} alt="Selecionar..." />
       </div>
       <div
         className={`button-selection ${
-          tool === ToolType.LINE && "button-selection-selected"
+          tool === "line" && "button-selection-selected"
         }`}
-        onClick={() => setTool(ToolType.LINE)}
+        onClick={() => setTool("line")}
       >
         <img src={lineSVG} alt="Linha" />
       </div>
       <div
         className={`button-selection ${
-          tool === ToolType.RECTANGLE && "button-selection-selected"
+          tool === "rectangle" && "button-selection-selected"
         }`}
-        onClick={() => setTool(ToolType.RECTANGLE)}
+        onClick={() => setTool("rectangle")}
       >
         <img src={squareSVG} alt="Quadrado" />
       </div>

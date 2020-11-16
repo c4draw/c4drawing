@@ -1,10 +1,8 @@
 import { ElementColorPalette } from 'constants/ColorPalette';
 import { DrawableElement } from 'types/DrawableElement';
 
-import { rough } from './RoughUtils';
-
 interface IRoughDrawerProps {
-  canvas: HTMLCanvasElement;
+  roughCanvas: any;
   element: DrawableElement;
 }
 
@@ -19,8 +17,7 @@ function getOptions(element: DrawableElement) {
 }
 
 const RoughDrawer = {
-  rectangle: function ({ canvas, element }: IRoughDrawerProps) {
-    const roughCanvas = rough.canvas(canvas);
+  rectangle: function ({ roughCanvas, element }: IRoughDrawerProps) {
     const { coordinates } = element;
     const { xStart, yStart, xEnd, yEnd } = coordinates;
     const width = xEnd - xStart;
@@ -29,8 +26,7 @@ const RoughDrawer = {
 
     roughCanvas.rectangle(xStart, yStart, width, height, options);
   },
-  line: function ({ canvas, element }: IRoughDrawerProps) {
-    const roughCanvas = rough.canvas(canvas);
+  line: function ({ roughCanvas, element }: IRoughDrawerProps) {
     const { coordinates } = element;
     const { xStart, yStart, xEnd, yEnd } = coordinates;
 

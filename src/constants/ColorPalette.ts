@@ -1,4 +1,4 @@
 export const ElementColorPalette = {
   Selected: "dodgerblue",
-  Default: "#333",
+  Default: "gray",
 };

@@ -1,5 +1,5 @@
 import { ToolType } from 'constants/toolType';
-import { ElementWhiteboardDrawing } from 'types/elementWhiteboardDrawing';
+import { DrawableElement } from 'types/DrawableElement';
 
 import { getElementAtPosition } from './ElementUtils';
 
@@ -22,7 +22,7 @@ const MouseUtils = {
   setMouseStyleByTool: function (
     tool: string,
     event: any,
-    elements: ElementWhiteboardDrawing[]
+    elements: DrawableElement[]
   ) {
     if (tool === ToolType.SELECTION) {
       const element = getElementAtPosition(

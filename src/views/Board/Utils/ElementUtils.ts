@@ -1,10 +1,22 @@
-import { ToolType } from 'constants/toolType';
-import { ElementWhiteboardDrawing } from 'types/elementWhiteboardDrawing';
+import { Coords } from 'interfaces/Coords';
+import { DrawableElement } from 'types/DrawableElement';
+import { PositionType } from 'types/PositionType';
+
+function setElementspositions(
+  clientX: number,
+  clientY: number,
+  elements: DrawableElement[]
+) {
+  return elements.map((element) => ({
+    ...element,
+    position: positionWithinElement(clientX, clientY, element),
+  }));
+}
 
 export function resizedCoordinates(
   clientX: number,
   clientY: number,
-  position: string,
+  position: PositionType,
   coordinates: { xStart: number; yStart: number; xEnd: number; yEnd: number }
 ) {
   const { xStart, yStart, xEnd, yEnd } = coordinates;
@@ -50,66 +62,41 @@ function distance(
 function positionWithinElement(
   clientX: number,
   clientY: number,
-  element: ElementWhiteboardDrawing
+  element: DrawableElement
 ) {
-  if (element.toolType === ToolType.RECTANGLE) {
-    const topLeft = nearPoint(
-      clientX,
-      clientY,
-      element.xStart,
-      element.yStart,
-      "tl"
-    );
-    const topRight = nearPoint(
-      clientX,
-      clientY,
-      element.xEnd,
-      element.yStart,
-      "tr"
-    );
-    const bottomLeft = nearPoint(
-      clientX,
-      clientY,
-      element.xStart,
-      element.yEnd,
-      "bl"
-    );
-    const bottomRight = nearPoint(
-      clientX,
-      clientY,
-      element.xEnd,
-      element.yEnd,
-      "br"
-    );
+  if (!element) return;
+
+  const { coordinates } = element;
+  const { xStart, yStart, xEnd, yEnd } = coordinates;
+
+  if (element.shape === "rectangle") {
+    const topLeft = nearPoint(clientX, clientY, xStart, yStart, "tl");
+    const topRight = nearPoint(clientX, clientY, xEnd, yStart, "tr");
+    const bottomLeft = nearPoint(clientX, clientY, xStart, yEnd, "bl");
+    const bottomRight = nearPoint(clientX, clientY, xEnd, yEnd, "br");
 
     const inside =
-      clientX >= element.xStart &&
-      clientX <= element.xEnd &&
-      clientY >= element.yStart &&
-      clientY <= element.yEnd
+      clientX >= xStart &&
+      clientX <= xEnd &&
+      clientY >= yStart &&
+      clientY <= yEnd
         ? "inside"
         : null;
 
     return topLeft || topRight || bottomLeft || bottomRight || inside;
   }
 
-  if (element.toolType === ToolType.LINE) {
-    const pointA = { x: element.xStart, y: element.yStart };
-    const pointB = { x: element.xEnd, y: element.yEnd };
+  if (element.shape === "line") {
+    const pointA = { x: xStart, y: yStart };
+    const pointB = { x: xEnd, y: yEnd };
     const pointC = { x: clientX, y: clientY };
 
     const offset =
       distance(pointA, pointB) -
       (distance(pointA, pointC) + distance(pointB, pointC));
 
-    const start = nearPoint(
-      clientX,
-      clientY,
-      element.xStart,
-      element.yStart,
-      "start"
-    );
-    const end = nearPoint(clientX, clientY, element.xEnd, element.yEnd, "end");
+    const start = nearPoint(clientX, clientY, xStart, yStart, "start");
+    const end = nearPoint(clientX, clientY, xEnd, yEnd, "end");
 
     const inside = Math.abs(offset) < 1 ? "inside" : null;
 
@@ -120,20 +107,30 @@ function positionWithinElement(
 export function getElementAtPosition(
   clientX: number,
   clientY: number,
-  elements: ElementWhiteboardDrawing[]
+  elements: DrawableElement[]
 ) {
-  return elements
-    .map((element) => ({
-      ...element,
-      position: positionWithinElement(clientX, clientY, element),
-    }))
-    .find((element) => element.position !== null);
+  // return elements
+  //   .map((element) => ({
+  //     ...element,
+  //     position: positionWithinElement(clientX, clientY, element),
+  //   }))
+  //   .find((element) => element.position !== null);
+
+  const elementsWithPosition = setElementspositions(clientX, clientY, elements);
+
+  const elementAtPosition = elementsWithPosition.find(
+    (element: DrawableElement) => element && element.position !== null
+  );
+  return elementAtPosition;
 }
 
-export function adjustElementCoordinates(element: ElementWhiteboardDrawing) {
-  const { toolType, xStart, xEnd, yStart, yEnd } = element;
+export function adjustElementCoordinates(element: DrawableElement): Coords {
+  // const { toolType, xStart, xEnd, yStart, yEnd } = element;
 
-  if (toolType === ToolType.RECTANGLE) {
+  const { coordinates, shape } = element;
+  const { xStart, yStart, xEnd, yEnd } = coordinates;
+
+  if (shape === "rectangle") {
     const minX = Math.min(xStart, xEnd);
     const maxX = Math.max(xStart, xEnd);
     const minY = Math.min(yStart, yEnd);
@@ -142,11 +139,11 @@ export function adjustElementCoordinates(element: ElementWhiteboardDrawing) {
     return { xStart: minX, yStart: minY, xEnd: maxX, yEnd: maxY };
   }
 
-  if (toolType === ToolType.LINE) {
-    if (xStart < xEnd || (xStart === xEnd && yStart < yEnd)) {
-      return { xStart, yStart, xEnd, yEnd };
-    } else {
-      return { xStart: xEnd, yStart: yEnd, xEnd: xStart, yEnd: yStart };
-    }
+  // if (shape === "line") {
+  if (xStart < xEnd || (xStart === xEnd && yStart < yEnd)) {
+    return { xStart, yStart, xEnd, yEnd };
+  } else {
+    return { xStart: xEnd, yStart: yEnd, xEnd: xStart, yEnd: yStart };
   }
+  // }
 }
