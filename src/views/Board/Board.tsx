@@ -14,10 +14,10 @@ import MouseUtils from './Utils/MouseUtils';
 import RoughUtils from './Utils/RoughUtils';
 
 function Board() {
-  // const [elements, setElements] = useState<Array<ElementWhiteboardDrawing>>([]);
+  const notSelectedId = -1;
+  const [selectedElementId, setSelectedElementId] = useState(notSelectedId);
   const [elements, setElements] = useState<DrawableElement[]>([]);
   const [action, setAction] = useState<ActionType>("none");
-  // const [selectedElement, setSelectedElement] = useState<any | null>(null);
   const [tool, setTool] = useState<ToolType>("line");
 
   useLayoutEffect(() => {
@@ -27,14 +27,7 @@ function Board() {
 
     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
 
-    // const roughCanvas = rough.canvas(canvas);
-    // // elements.forEach(({ roughElement }) => {
-    // //   if (roughElement) {
-    // //     roughCanvas.draw(roughElement);
-    // //   }
-    // // });
-
-    showElements(false);
+    showElements(true);
 
     elements.forEach((element: DrawableElement) => {
       RoughUtils.drawElement(canvas, element);
@@ -45,38 +38,27 @@ function Board() {
   function showElements(show: boolean) {
     if (show) {
       console.clear();
-      const newLine = ">>> ";
+      const newLine = "\n";
+      console.log(">>> Selected ID: " + selectedElementId);
 
       elements.forEach((elmt) => {
-        const obj = newLine + JSON.stringify(elmt);
+        console.log(">>> Element: " + elmt.id);
+
+        const obj =
+          `\t coords: ${JSON.stringify(elmt.coordinates)} ${newLine}` +
+          `\t shape: ${JSON.stringify(elmt.shape)} ${newLine}` +
+          `\t isSelected: ${JSON.stringify(elmt.isSelected)} ${newLine}`;
+
         console.log(obj);
       });
     }
   }
 
-  function updateElement(
-    element: DrawableElement
-    // id: number,
-    // xStart: number,
-    // yStart: number,
-    // xEnd: number,
-    // yEnd: number,
-    // type: string
-  ) {
-    // const updateCurrentElementCreated = RoughUtils.createElement(
-    //   id,
-    //   xStart,
-    //   yStart,
-    //   xEnd,
-    //   yEnd,
-    //   type
-    // );
-
-    // const elementsWithLastCreated = [...elements];
-    // elementsWithLastCreated[id] = updateCurrentElementCreated;
-
-    const elementsWithLastCreated = [...elements];
-    elementsWithLastCreated[element.id] = element;
+  function updateElement(updatedElement: DrawableElement) {
+    const elementsWithLastCreated = elements.map((oldElement) => {
+      if (updatedElement.id === oldElement.id) return updatedElement;
+      return oldElement;
+    });
 
     setElements(elementsWithLastCreated);
   }
@@ -85,29 +67,14 @@ function Board() {
    * @param element Send "null" to unselet the selected element
    */
   function setSelectedElement(newElement: DrawableElement | null) {
-    let newElements: DrawableElement[] = [...elements];
-    // console.log(">>>> setSelectedElement -> element", element);
-    // console.log(">>>> setSelectedElement -> newElements", newElements);
-
-    if (newElement) {
-      setSelectedElement(null); // Unselect all after select one
-      newElements[newElement.id] = { ...newElement, isSelected: true };
-      // newElements = elements.map((oldElement: DrawableElement) => {
-      //   if (oldElement.id === newElement.id) {
-      //     return { ...newElement, isSelected: true };
-      //   }
-      //   return { ...oldElement, isSelected: false };
-      // });
-      // setElements(newElements);
-    } else {
-      const selectedElmtIdx = getSelectedElementId();
-      const selectedElmt = newElements[selectedElmtIdx];
-      newElements[selectedElmtIdx] = { ...selectedElmt, isSelected: false };
-    }
-
-    // console.log(">>>> setSelectedElement -> newElements", newElements);
+    let newElements: DrawableElement[] = elements.map((elmt) => {
+      const isSelected = elmt.id === newElement?.id;
+      return { ...elmt, isSelected };
+    });
 
     setElements(newElements);
+    const selectedId = newElement?.id || notSelectedId;
+    setSelectedElementId(selectedId);
   }
 
   function moveOrResizeSelectedElement(event: React.MouseEvent) {
@@ -117,8 +84,6 @@ function Board() {
       elements
     );
     console.log(">>> getElementAtPosition", element);
-    // if (!element) return;
-    // if (!element.coordinates) return;
 
     if (element) {
       const { coordinates } = element;
@@ -140,7 +105,6 @@ function Board() {
   }
 
   function addNewElement(newElement: DrawableElement) {
-    // setElements((prevState) => [...prevState, newElement]);
     const newElements = [...elements, newElement];
 
     setElements(newElements);
@@ -155,14 +119,6 @@ function Board() {
 
   function drawNewElement(event: React.MouseEvent, shape: ShapeType) {
     const id = elements.length;
-    // const newRoughElement = RoughUtils.createElement(
-    //   id,
-    //   event.clientX,
-    //   event.clientY,
-    //   event.clientX,
-    //   event.clientY,
-    //   tool
-    // );
 
     const newElement: DrawableElement = {
       id,
@@ -200,15 +156,7 @@ function Board() {
     });
 
     if (raisedElement) {
-      updateElement(
-        raisedElement
-        // raisedElement.id,
-        // raisedElement.xStart,
-        // raisedElement.yStart,
-        // raisedElement.xEnd,
-        // raisedElement.yEnd,
-        // raisedElement.type
-      );
+      updateElement(raisedElement);
     }
   }
 
@@ -217,52 +165,21 @@ function Board() {
     updateElementByAction(event);
   }
 
-  function getSelectedElementId() {
-    const notFoundId = -1;
-    if (!elements) return notFoundId;
-
-    const id = elements.findIndex((element) => element && element.isSelected);
-    return id || notFoundId;
-  }
-
   function getSelectedElement() {
-    const selectedElementIndex = getSelectedElementId();
-    return elements[selectedElementIndex];
+    return elements.find((elmt) => elmt.id === selectedElementId);
   }
 
   function updateSelectElementCoordinates() {
-    console.log(">> elements", elements);
-    if (!elements) return;
-
-    // const index = selectedElement.id;
-    const index = getSelectedElementId();
-    // const { id, toolType } = elements[index];
-    console.log(">> index", index);
-
-    if (index === -1) return;
-
-    const { id, shape } = elements[index];
-    const newElementCoods = adjustElementCoordinates(elements[index]);
-    if (!newElementCoods) return;
-
-    updateElement({
-      id,
-      coordinates: newElementCoods,
-      shape,
-    });
-
-    // updateElement(
-    //   id,
-    //   newElementCoods.xStart,
-    //   newElementCoods.yStart,
-    //   newElementCoods.xEnd,
-    //   newElementCoods.yEnd,
-    //   toolType
-    // );
+    const selectedElement = getSelectedElement();
+    if (selectedElement) {
+      const newElementCoords = adjustElementCoordinates(selectedElement);
+      const newElement = { ...selectedElement, coordinates: newElementCoords };
+      updateElement(newElement);
+    }
   }
 
   function handleOnMouseUp() {
-    if (!getSelectedElementId()) return;
+    if (!selectedElementId) return;
 
     const allowedActions: ActionType[] = ["drawing", "resizing"];
 
@@ -288,6 +205,7 @@ function Board() {
           yEnd: element.yEnd,
         },
         shape: element.toolType,
+        isSelected: false,
       };
 
       mockedDrawable.push(newElement);
@@ -298,22 +216,8 @@ function Board() {
   }
 
   useEffect(() => {
+    setTool("selection");
     loadElements();
-    // console.log(">>> Load after:", elements);
-    // addRect();
-    // // addLine();
-
-    // const newElmt: DrawableElement = {
-    //   id: elements.length,
-    //   coordinates: {
-    //     xStart: getRandomArbitrary(10, 600),
-    //     yStart: getRandomArbitrary(10, 600),
-    //     xEnd: getRandomArbitrary(10, 600),
-    //     yEnd: getRandomArbitrary(10, 600),
-    //   },
-    //   shape: new Date().getSeconds() % 2 == 0 ? "rectangle" : "line",
-    // };
-    // setElements([...elements, newElmt]);
   }, []);
 
   return (

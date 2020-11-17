@@ -6,7 +6,7 @@ interface IToolsActionsProps {
   event: any;
   tool: string;
   elements: DrawableElement[];
-  selectedElement: DrawableElement;
+  selectedElement: DrawableElement | undefined;
 }
 
 // interface IElementInfo {
@@ -28,21 +28,15 @@ const ToolsActions = {
   }: IToolsActionsProps): DrawableElement | undefined {
     if (!selectedElement) return;
 
-    const { coordinates, isSelected } = selectedElement;
+    const { coordinates } = selectedElement;
     const { xStart, yStart, xEnd, yEnd, offsetX, offsetY } = coordinates;
 
     const width = xEnd - xStart;
     const height = yEnd - yStart;
-
-    // const newX1 = event.clientX - offsetX;
-    // const newY1 = event.clientY - offsetY;
-
-    let newX1 = 0;
-    let newY1 = 0;
-    if (offsetX && offsetY) {
-      newX1 = event.clientX - offsetX;
-      newY1 = event.clientY - offsetY;
-    }
+    const offsetXToSub = width / 2 + (offsetX || 0);
+    const offsetYToSub = height / 2 + (offsetY || 0);
+    const newX1 = event.clientX - offsetXToSub;
+    const newY1 = event.clientY - offsetYToSub;
 
     // return {
     //   id: selectedElement.id,
@@ -53,15 +47,13 @@ const ToolsActions = {
     //   type: selectedElement.toolType,
     // };
     return {
-      id: selectedElement.id,
+      ...selectedElement,
       coordinates: {
         xStart: newX1,
         yStart: newY1,
         xEnd: newX1 + width,
         yEnd: newY1 + height,
       },
-      isSelected,
-      shape: selectedElement.shape,
     };
   },
   drawing: function ({
@@ -104,7 +96,8 @@ const ToolsActions = {
     event,
     selectedElement,
   }: IToolsActionsProps): DrawableElement | undefined {
-    const { id, coordinates, position } = selectedElement;
+    if (!selectedElement) return;
+    const { coordinates, position } = selectedElement;
 
     const coordinatesResized = resizedCoordinates(
       event.clientX,
@@ -116,14 +109,8 @@ const ToolsActions = {
     if (!coordinatesResized) return;
 
     return {
-      id,
-      coordinates: {
-        xStart: coordinatesResized.xStart,
-        yStart: coordinatesResized.yStart,
-        xEnd: coordinatesResized.xEnd,
-        yEnd: coordinatesResized.yEnd,
-      },
-      shape: selectedElement.shape,
+      ...selectedElement,
+      coordinates: coordinatesResized,
     };
   },
 };
