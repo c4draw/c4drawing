@@ -1,10 +1,11 @@
 import { DrawableElement } from 'types/DrawableElement';
+import { ToolType } from 'types/ToolType';
 
 import { resizedCoordinates } from './Utils/ElementUtils';
 
 interface IToolsActionsProps {
   event: any;
-  tool: string;
+  tool: ToolType;
   elements: DrawableElement[];
   selectedElement: DrawableElement | undefined;
 }
@@ -60,14 +61,13 @@ const ToolsActions = {
     event,
     tool,
     elements,
+    selectedElement,
   }: IToolsActionsProps): DrawableElement | undefined {
-    if (!elements) return;
-    if (!elements.length) return;
+    if (!selectedElement) return;
+    if (tool === "selection") return;
+    // if (!elements || !elements.length) return;
 
-    const currentElementCreatedIndex = elements.length - 1;
-    const { coordinates, shape, isSelected } = elements[
-      currentElementCreatedIndex
-    ];
+    const { coordinates } = selectedElement;
     const { xStart, yStart } = coordinates;
     const { clientX: clientXEnd, clientY: clientYEnd } = event;
 
@@ -79,23 +79,24 @@ const ToolsActions = {
     //   yEnd: clientYEnd,
     //   type: tool,
     // };
-
-    return {
-      id: currentElementCreatedIndex,
+    const elmt: DrawableElement = {
+      ...selectedElement,
       coordinates: {
         xStart: xStart,
         yStart: yStart,
         xEnd: clientXEnd,
         yEnd: clientYEnd,
       },
-      shape,
-      isSelected,
+      shape: tool,
+      // isSelected: true,
     };
+    return;
   },
   resizing: function ({
     event,
     selectedElement,
   }: IToolsActionsProps): DrawableElement | undefined {
+    //| undefined {
     if (!selectedElement) return;
     const { coordinates, position } = selectedElement;
 
@@ -105,8 +106,6 @@ const ToolsActions = {
       position,
       coordinates
     );
-
-    if (!coordinatesResized) return;
 
     return {
       ...selectedElement,

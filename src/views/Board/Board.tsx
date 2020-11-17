@@ -9,16 +9,22 @@ import { ToolType } from 'types/ToolType';
 import { mockedElements } from './mock';
 import ToolBox from './ToolBox';
 import ToolsActions from './ToolsActions';
-import { adjustElementCoordinates, getElementAtPosition } from './Utils/ElementUtils';
+import { adjustElementCoordinates, getElementAtPosition, getId, positionWithinElement } from './Utils/ElementUtils';
 import MouseUtils from './Utils/MouseUtils';
 import RoughUtils from './Utils/RoughUtils';
 
 function Board() {
+  type PointType = { x: number; y: number };
+  const positionZero = { x: 0, y: 0 };
+  let startMousePosition: PointType = positionZero;
   const notSelectedId = -1;
   const [selectedElementId, setSelectedElementId] = useState(notSelectedId);
   const [elements, setElements] = useState<DrawableElement[]>([]);
+  // const [hoverelement, setHoverElement] = useState<DrawableElement>();
+  const [mousePosition, setMousePosition] = useState<PointType>(positionZero);
   const [action, setAction] = useState<ActionType>("none");
   const [tool, setTool] = useState<ToolType>("line");
+  const [stuffToLog, setStuffToLog] = useState<any[]>([]);
 
   useLayoutEffect(() => {
     const canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -39,6 +45,12 @@ function Board() {
       const newLine = "\n";
       console.log(">>> Selected ID: " + selectedElementId);
       console.log(">>> Selected tool: " + tool);
+      console.log(">>> Element hovered: ");
+      console.log("----------------------------------------");
+      console.log(">>> Stuff: ");
+      stuffToLog.map((stuff) => {
+        console.log(`\t${JSON.stringify(stuff)}`);
+      });
       console.log("----------------------------------------");
 
       elements.forEach((elmt) => {
@@ -47,6 +59,7 @@ function Board() {
         const obj =
           `\t coords: ${JSON.stringify(elmt.coordinates)} ${newLine}` +
           `\t shape: ${JSON.stringify(elmt.shape)} ${newLine}` +
+          `\t position: ${JSON.stringify(elmt.position)} ${newLine}` +
           `\t isSelected: ${JSON.stringify(elmt.isSelected)} ${newLine}`;
 
         console.log(obj);
@@ -56,7 +69,14 @@ function Board() {
 
   function updateElement(updatedElement: DrawableElement) {
     const elementsWithLastCreated = elements.map((oldElement) => {
-      if (updatedElement.id === oldElement.id) return updatedElement;
+      if (updatedElement.id === oldElement.id) {
+        const position = positionWithinElement(
+          mousePosition.x,
+          mousePosition.y,
+          updatedElement
+        );
+        return { ...updatedElement, position };
+      }
       return oldElement;
     });
 
@@ -77,26 +97,20 @@ function Board() {
     setSelectedElementId(selectedId);
   }
 
-  function randomIntFromInterval(params: { min?: number; max: number }) {
-    const { min = 0, max } = params;
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  }
-
-  function getId(): number {
-    const id = randomIntFromInterval({ max: Number.MAX_SAFE_INTEGER });
-    const isExistingId = Boolean(elements.find((elmt) => elmt.id === id));
-    if (isExistingId) return getId();
-    return id;
-  }
-
   function moveOrResizeSelectedElement(event: React.MouseEvent) {
+    // const element = getElementAtPosition(
+    //   event.clientX,
+    //   event.clientY,
+    //   elements
+    // );
+
     const element = getElementAtPosition(
-      event.clientX,
-      event.clientY,
+      mousePosition.x,
+      mousePosition.y,
       elements
     );
 
-    console.log(">>> getElementAtPosition", element);
+    setStuffToLog([{ key: "getElementAtPosition", value: element || null }]);
 
     if (element) {
       const { coordinates } = element;
@@ -122,7 +136,7 @@ function Board() {
 
     setElements(newElements);
 
-    setSelectedElement(newElement);
+    // setSelectedElement(newElement);
   }
 
   function addManyNewElements(newElementArr: DrawableElement[]) {
@@ -132,9 +146,10 @@ function Board() {
 
   function drawNewElement(event: React.MouseEvent, shape: ShapeType) {
     const id = elements.length;
+    // const id = getId(elements);
 
-    const xStart = event.clientX;
-    const yStart = event.clientY;
+    const xStart = startMousePosition.x;
+    const yStart = startMousePosition.y;
     const xEnd = event.clientX;
     const yEnd = event.clientY;
 
@@ -144,11 +159,13 @@ function Board() {
       shape,
       isSelected: true,
     };
+    setSelectedElementId(id);
     addNewElement(newElement);
     setAction("drawing");
   }
 
   function handleOnMouseDown(event: React.MouseEvent) {
+    startMousePosition = { x: event.clientX, y: event.clientY };
     if (tool === "selection") {
       moveOrResizeSelectedElement(event);
     } else {
@@ -168,12 +185,20 @@ function Board() {
       selectedElement,
     });
 
+    // setStuffToLog([
+    //   { key: "raisedElement", value: raisedElement || null },
+    //   { key: "selectedElement", value: selectedElement || null },
+    // ]);
+
     if (raisedElement) {
+      if (raisedElement.isSelected) setSelectedElementId(raisedElement.id);
       updateElement(raisedElement);
     }
   }
 
   function handleOnMouseMove(event: React.MouseEvent) {
+    const { clientX, clientY } = event;
+    setMousePosition({ x: clientX, y: clientY });
     MouseUtils.setMouseStyleByTool(tool, event, elements);
     updateElementByAction(event);
   }
@@ -205,13 +230,18 @@ function Board() {
   }
 
   function loadElements() {
+    addNewElement({
+      id: 213,
+      coordinates: { xStart: 484, yStart: 374, xEnd: 556, yEnd: 395 },
+      shape: "rectangle",
+    });
     // Posteriorly we'll search these elements from DynamoDB (not mocked)
     const mockedDrawable: DrawableElement[] = [];
 
     mockedElements.forEach((element: any) => {
       const newElement = {
         // id: element.id,
-        id: getId(),
+        id: getId(elements),
         coordinates: {
           xStart: element.xStart,
           yStart: element.yStart,
@@ -236,7 +266,7 @@ function Board() {
 
   useEffect(() => {
     logger(true);
-  }, [elements, tool, selectedElementId]);
+  }, [elements, tool, selectedElementId, stuffToLog]);
 
   return (
     <div id="board" className="fade-in">

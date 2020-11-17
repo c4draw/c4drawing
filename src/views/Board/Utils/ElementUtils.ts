@@ -33,7 +33,7 @@ export function resizedCoordinates(
     case "end":
       return { xStart, yStart, xEnd: clientX, yEnd: clientY };
     default:
-      return null;
+      return { xStart, yStart, xEnd, yEnd };
   }
 }
 
@@ -59,7 +59,7 @@ function distance(
   );
 }
 
-function positionWithinElement(
+export function positionWithinElement(
   clientX: number,
   clientY: number,
   element: DrawableElement
@@ -146,4 +146,16 @@ export function adjustElementCoordinates(element: DrawableElement): Coords {
     return { xStart: xEnd, yStart: yEnd, xEnd: xStart, yEnd: yStart };
   }
   // }
+}
+
+function randomIntFromInterval(params: { min?: number; max: number }) {
+  const { min = 0, max } = params;
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+export function getId(elements: DrawableElement[]): number {
+  const id = randomIntFromInterval({ max: Number.MAX_SAFE_INTEGER });
+  const isExistingId = Boolean(elements.find((elmt) => elmt.id === id));
+  if (isExistingId) return getId(elements);
+  return id;
 }
