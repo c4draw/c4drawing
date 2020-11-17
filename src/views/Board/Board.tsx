@@ -27,19 +27,19 @@ function Board() {
 
     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
 
-    showElements(true);
-
     elements.forEach((element: DrawableElement) => {
       RoughUtils.drawElement(canvas, element);
       // console.log("> Draw: ", element);
     });
   }, [elements]);
 
-  function showElements(show: boolean) {
+  function logger(show: boolean) {
     if (show) {
       console.clear();
       const newLine = "\n";
       console.log(">>> Selected ID: " + selectedElementId);
+      console.log(">>> Selected tool: " + tool);
+      console.log("----------------------------------------");
 
       elements.forEach((elmt) => {
         console.log(">>> Element: " + elmt.id);
@@ -77,12 +77,25 @@ function Board() {
     setSelectedElementId(selectedId);
   }
 
+  function randomIntFromInterval(params: { min?: number; max: number }) {
+    const { min = 0, max } = params;
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  function getId(): number {
+    const id = randomIntFromInterval({ max: Number.MAX_SAFE_INTEGER });
+    const isExistingId = Boolean(elements.find((elmt) => elmt.id === id));
+    if (isExistingId) return getId();
+    return id;
+  }
+
   function moveOrResizeSelectedElement(event: React.MouseEvent) {
     const element = getElementAtPosition(
       event.clientX,
       event.clientY,
       elements
     );
+
     console.log(">>> getElementAtPosition", element);
 
     if (element) {
@@ -120,15 +133,16 @@ function Board() {
   function drawNewElement(event: React.MouseEvent, shape: ShapeType) {
     const id = elements.length;
 
+    const xStart = event.clientX;
+    const yStart = event.clientY;
+    const xEnd = event.clientX;
+    const yEnd = event.clientY;
+
     const newElement: DrawableElement = {
       id,
-      coordinates: {
-        xStart: event.clientX,
-        yStart: event.clientY,
-        xEnd: event.clientX,
-        yEnd: event.clientY,
-      },
+      coordinates: { xStart, yStart, xEnd, yEnd },
       shape,
+      isSelected: true,
     };
     addNewElement(newElement);
     setAction("drawing");
@@ -138,8 +152,7 @@ function Board() {
     if (tool === "selection") {
       moveOrResizeSelectedElement(event);
     } else {
-      const shape: ShapeType = tool === "line" ? "line" : "rectangle";
-      drawNewElement(event, shape);
+      drawNewElement(event, tool);
     }
   }
 
@@ -197,7 +210,8 @@ function Board() {
 
     mockedElements.forEach((element: any) => {
       const newElement = {
-        id: element.id,
+        // id: element.id,
+        id: getId(),
         coordinates: {
           xStart: element.xStart,
           yStart: element.yStart,
@@ -219,6 +233,10 @@ function Board() {
     setTool("selection");
     loadElements();
   }, []);
+
+  useEffect(() => {
+    logger(true);
+  }, [elements, tool, selectedElementId]);
 
   return (
     <div id="board" className="fade-in">
