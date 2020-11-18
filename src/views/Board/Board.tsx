@@ -29,10 +29,10 @@ function Board() {
   const [action, setAction] = useState<ActionType>("none");
   const [selectedElement, setSelectedElement] = useState<any | null>(null);
   const [tool, setTool] = useState(ToolType.LINE);
-  const [mousePosition, setMousePosition] = useState<PointType>({ x: 0, y: 0 });
+  const [, setMousePosition] = useState<PointType>({ x: 0, y: 0 });
 
   const [inputInfo, setInputInfo] = useState(initialInputInfo);
-  const [inputWidth, setInputWidht] = useState(minInputWidth);
+  const [, setInputWidht] = useState(minInputWidth);
   const [showInput, setShowInput] = useState(false);
 
   useLayoutEffect(() => {
@@ -55,8 +55,6 @@ function Board() {
       }
       CanvasUtils.writeText(canvasContext, element);
     });
-
-    console.log(inputWidth, mousePosition);
   }, [elements]);
 
   function updateElement(
