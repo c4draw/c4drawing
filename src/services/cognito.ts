@@ -57,4 +57,8 @@ function confirmRegistration(
   );
 }
 
-export default { register, authenticate, confirmRegistration };
+function getLoggedUser() {
+  return cognitoUserPool.getCurrentUser();
+}
+
+export default { register, authenticate, confirmRegistration, getLoggedUser };

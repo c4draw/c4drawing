@@ -1,11 +1,19 @@
-import './global.css';
+import "./global.css";
 
-import React from 'react';
+import React, { Suspense } from "react";
+import Routes from "./routes";
+import { BrowserRouter } from "react-router-dom";
 
-import Routes from './routes';
+import Loading from "views/Loading";
 
 function App() {
-  return <Routes />;
+  return (
+    <BrowserRouter>
+      <Suspense fallback={<Loading />}>
+        <Routes />
+      </Suspense>
+    </BrowserRouter>
+  );
 }
 
 export default App;
