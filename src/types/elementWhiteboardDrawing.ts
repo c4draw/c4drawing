@@ -1,4 +1,4 @@
-import { Drawable } from "roughjs/bin/core";
+import { Drawable } from 'roughjs/bin/core';
 
 export type ElementWhiteboardDrawing = {
   id: number;
@@ -7,5 +7,6 @@ export type ElementWhiteboardDrawing = {
   yStart: number;
   yEnd: number;
   toolType: string;
-  roughElement: Drawable;
+  text: "unset" | string;
+  roughElement?: Drawable;
 };

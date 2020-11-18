@@ -37,6 +37,14 @@ const ToolBox: React.FC<IToolBoxProps> = ({ tool, setTool }) => {
       >
         <img src={squareSVG} alt="Quadrado" />
       </div>
+      <div
+        className={`button-selection ${
+          tool === ToolType.TEXT && "button-selection-selected"
+        }`}
+        onClick={() => setTool(ToolType.TEXT)}
+      >
+        T
+      </div>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 export const ToolType = {
   RECTANGLE: "rectangle",
   LINE: "line",
-  SELECTION: "selection"
+  SELECTION: "selection",
+  TEXT: "text",
 };
