@@ -1,11 +1,21 @@
-import './styles.css';
+import "./styles.css";
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
-import { RoutesPath } from '../../enums/routesPath';
+import { RoutesPath } from "../../enums/routesPath";
+import cognito from "services/cognito";
+import { CognitoUser } from "amazon-cognito-identity-js";
 
 const Landing = () => {
+  const [isLoggedUser, setLoggedUser] = useState<CognitoUser | null>(null);
+
+  useEffect(() => handleOnInitLanding(), []);
+
+  const handleOnInitLanding = () => {
+    setLoggedUser(cognito.getLoggedUser());
+  };
+
   return (
     <div id="landing" className="fade-in">
       <div className="wrapper">
@@ -13,12 +23,14 @@ const Landing = () => {
           <div className="logo">
             <Link to={RoutesPath.Landing}>C4Drawing</Link>
           </div>
-          <div className="links">
-            <Link to={RoutesPath.Login}>Login</Link>
-            <Link to={RoutesPath.Register} className="highlighted">
-              Registre-se
-            </Link>
-          </div>
+          {!isLoggedUser && (
+            <div className="links">
+              <Link to={RoutesPath.Login}>Login</Link>
+              <Link to={RoutesPath.Register} className="highlighted">
+                Registre-se
+              </Link>
+            </div>
+          )}
         </nav>
 
         <div className="content">
