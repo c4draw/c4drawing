@@ -38,3 +38,21 @@
 .button-selection:hover {
   background-color: white;
 }
+
+.text-input,
+.text-input:focus,
+.text-input:hover {
+  font-family: Neucha !important;
+  font-size: 20px;
+  border: none;
+  outline: unset;
+  background-color: transparent;
+  padding: 0 2px;
+  border-radius: 0;
+  border: 1px solid dodgerblue;
+  position: absolute;
+  width: auto;
+  height: 32px;
+  min-width: 16px;
+  overflow: hidden;
+}
