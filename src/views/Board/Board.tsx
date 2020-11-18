@@ -1,17 +1,20 @@
-import './styles.css';
+import "./styles.css";
 
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ActionType } from 'types/actionType';
-import { TextualElementType } from 'types/TextualElement';
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ActionType } from "types/actionType";
+import { TextualElementType } from "types/TextualElement";
 
-import { ToolType } from '../../constants/toolType';
-import { ElementWhiteboardDrawing } from '../../types/elementWhiteboardDrawing';
-import ToolBox from './ToolBox';
-import ToolsActions from './ToolsActions';
-import { CanvasUtils } from './Utils/CanvasUtils';
-import { adjustElementCoordinates, getElementAtPosition } from './Utils/ElementUtils';
-import MouseUtils from './Utils/MouseUtils';
-import RoughUtils, { rough } from './Utils/RoughUtils';
+import { ToolType } from "../../constants/toolType";
+import { ElementWhiteboardDrawing } from "../../types/elementWhiteboardDrawing";
+import ToolBox from "./ToolBox";
+import ToolsActions from "./ToolsActions";
+import { CanvasUtils } from "./Utils/CanvasUtils";
+import {
+  adjustElementCoordinates,
+  getElementAtPosition,
+} from "./Utils/ElementUtils";
+import MouseUtils from "./Utils/MouseUtils";
+import RoughUtils, { rough } from "./Utils/RoughUtils";
 
 function Board() {
   type PointType = { x: number; y: number };
@@ -52,6 +55,8 @@ function Board() {
       }
       CanvasUtils.writeText(canvasContext, element);
     });
+
+    console.log(inputWidth, mousePosition);
   }, [elements]);
 
   function updateElement(
