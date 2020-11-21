@@ -208,7 +208,6 @@ const NewBoard = () => {
             y: cursor.position.y,
           });
         }
-        elementToRender = null;
         break;
 
       default:
