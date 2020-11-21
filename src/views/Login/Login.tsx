@@ -1,6 +1,5 @@
 import "./styles.css";
 
-import { ICognitoUserSessionData } from "amazon-cognito-identity-js";
 import React, { SyntheticEvent, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import cognito from "services/cognito";
@@ -21,17 +20,13 @@ const Login = () => {
       handleOnSuccesAuth,
       handleOnErrorAuth
     );
-
-    // history.push(RoutesPath.Board);
   }
 
-  const handleOnSuccesAuth = (session: ICognitoUserSessionData) => {
-    console.log("✔️ Login with success: ", JSON.stringify(session));
+  const handleOnSuccesAuth = () => {
+    history.push(RoutesPath.Board);
   };
 
-  const handleOnErrorAuth = (err: any) => {
-    console.log("❌  Error on login: ", JSON.stringify(err));
-  };
+  const handleOnErrorAuth = (err: any) => {};
 
   const handleRegister = () => {
     history.push(RoutesPath.Register);
@@ -76,10 +71,10 @@ const Login = () => {
             value={password}
             onChange={handlePasswordOnChange}
           />
-
+          {/* 
           <Link to={RoutesPath.Board} className="forget-password">
             esqueci minha senha
-          </Link>
+          </Link> */}
 
           <div className="button-group">
             <button type="button" onClick={handleRegister}>

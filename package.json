@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "dependencies": {
+    "@types/react-redux": "^7.1.11",
     "amazon-cognito-identity-js": "^4.5.0",
     "konva": "7.1.8",
     "react": "17.0.0",
