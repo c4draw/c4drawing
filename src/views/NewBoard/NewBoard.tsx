@@ -1,5 +1,5 @@
 import { CursorModeEnum } from 'enums/CursorMode';
-import React, { KeyboardEvent, SyntheticEvent, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Arrow, Layer, Stage } from 'react-konva';
 
 import AbsoluteContainer from './Components/AbsoluteContainer';
@@ -195,17 +195,19 @@ const NewBoard = () => {
   }
 
   function renderSelectedElement() {
+    let elementToRender: any;
     switch (tool) {
       case ToolsEnum.User:
-        return (
+        elementToRender = (
           <UserElement
             {...elementsProps}
             position={{ x: cursor.position.x - 125, y: cursor.position.y }}
           />
         );
+        break;
 
       case ToolsEnum.Principal:
-        return (
+        elementToRender = (
           <PrimaryElement
             {...elementsProps}
             position={{
@@ -214,9 +216,10 @@ const NewBoard = () => {
             }}
           />
         );
+        break;
 
       case ToolsEnum.Support:
-        return (
+        elementToRender = (
           <SupportElement
             {...elementsProps}
             position={{
@@ -225,18 +228,23 @@ const NewBoard = () => {
             }}
           />
         );
+        break;
 
       case ToolsEnum.Interaction:
         if (lineStart?.x) {
-          return arrowDrawer({
+          elementToRender = arrowDrawer({
             x: cursor.position.x,
             y: cursor.position.y,
           });
         }
+        elementToRender = null;
+        break;
 
       default:
-        return null;
+        elementToRender = null;
+        break;
     }
+    return elementToRender;
   }
 
   function handleNewBoadKeyDown(event: any) {

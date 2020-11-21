@@ -1,5 +1,5 @@
 import { CursorModeEnum } from 'enums/CursorMode';
-import React, { useState } from 'react';
+import React from 'react';
 import { Text } from 'react-konva';
 
 import { IElementProps } from '../Interfaces/ElementProps';

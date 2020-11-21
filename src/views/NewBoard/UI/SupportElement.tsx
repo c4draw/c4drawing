@@ -1,10 +1,8 @@
-import { CursorModeEnum } from 'enums/CursorMode';
 import React from 'react';
 import { Rect } from 'react-konva';
 
 import { ColorPalete } from '../Enums/ColorPallete';
 import { IElementProps } from '../Interfaces/ElementProps';
-import { KovaMouseEvent } from '../Types/KonvaMouseEvent';
 import EditableTextElement from './EditableTextElement';
 import GroupElement from './GroupElement';
 
@@ -14,13 +12,13 @@ const SupportElement: React.FC<IElementProps> = ({
   setCursor,
   showTextInput,
 }) => {
-  function handleTextMouseEnter(event: KovaMouseEvent) {
-    setCursor({ ...cursor, mode: CursorModeEnum.Text });
-  }
+  // function handleTextMouseEnter(event: KovaMouseEvent) {
+  //   setCursor({ ...cursor, mode: CursorModeEnum.Text });
+  // }
 
-  function handleTextMouseLeave(event: KovaMouseEvent) {
-    setCursor({ ...cursor, mode: CursorModeEnum.Default });
-  }
+  // function handleTextMouseLeave(event: KovaMouseEvent) {
+  //   setCursor({ ...cursor, mode: CursorModeEnum.Default });
+  // }
 
   return (
     <GroupElement
