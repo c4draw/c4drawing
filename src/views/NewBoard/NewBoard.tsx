@@ -9,7 +9,6 @@ import { ColorPalete } from './Enums/ColorPallete';
 import { ToolsEnum } from './Enums/ToolsEnum';
 import { IElementProps } from './Interfaces/ElementProps';
 import { CursorType } from './Types/CursorType';
-import { KovaDragEvent } from './Types/KonvaDragEvent';
 import { KovaMouseEvent } from './Types/KonvaMouseEvent';
 import { PointType } from './Types/PointType';
 import PrimaryElement from './UI/PrimaryElement';
@@ -25,37 +24,6 @@ const NewBoard = () => {
     position: initialPosition,
     mode: CursorModeEnum.Default,
   });
-
-  function handeMouseMove(event: KovaMouseEvent) {
-    const { evt } = event;
-    const { clientX, clientY } = evt;
-
-    const newCursor = { ...cursor, position: { x: clientX, y: clientY } };
-
-    // if (tool !== ToolsEnum.None) newCursor.mode = CursorModeEnum.Crosshair;
-
-    switch (tool) {
-      case ToolsEnum.None:
-        newCursor.mode = CursorModeEnum.Crosshair;
-        break;
-
-      case ToolsEnum.Interaction:
-        break;
-
-      default:
-        break;
-    }
-
-    setCursor(newCursor);
-  }
-
-  // function handleMouseUp(event: KovaMouseEvent) {
-  //   setIsDragging(false);
-  // }
-
-  // function handleMouseDown(event: KovaMouseEvent) {
-  //   setIsDragging(true);
-  // }
 
   const [lineStart, setLineStart] = useState<PointType>();
 
@@ -76,6 +44,29 @@ const NewBoard = () => {
   const [interactionElements, setInteractionElements] = useState<
     InteractionElementType[]
   >([]);
+
+  const [showTextInput, setShowTextInput] = useState(false);
+
+  function handeMouseMove(event: KovaMouseEvent) {
+    const { evt } = event;
+    const { clientX, clientY } = evt;
+
+    const newCursor = { ...cursor, position: { x: clientX, y: clientY } };
+
+    switch (tool) {
+      case ToolsEnum.None:
+        newCursor.mode = CursorModeEnum.Crosshair;
+        break;
+
+      case ToolsEnum.Interaction:
+        break;
+
+      default:
+        break;
+    }
+
+    setCursor(newCursor);
+  }
 
   function handleStageMouseDown(event: KovaMouseEvent) {
     const { evt } = event;
@@ -140,15 +131,6 @@ const NewBoard = () => {
     }
   }
 
-  const initialTextInput = {
-    title: "",
-    subtitle: "",
-    description: "",
-  };
-
-  const [showTextInput, setShowTextInput] = useState(false);
-  const [inputInfo, setInputInfo] = useState(initialTextInput);
-
   function handleShowTextInput() {
     setShowTextInput(true);
   }
@@ -162,16 +144,6 @@ const NewBoard = () => {
   function hideModal() {
     setShowTextInput(false);
     setCursor({ ...cursor, mode: CursorModeEnum.Grab });
-  }
-
-  function handleArrowDragStart(event: KovaDragEvent) {
-    // const { evt } = event;
-    // const { clientX, clientY } = evt;
-    // const currentPosition = { x: clientX, y: clientY };
-    // setLinePosition({
-    //   start: currentPosition,
-    //   end: currentPosition,
-    // });
   }
 
   function arrowDrawer(end: PointType) {
@@ -189,7 +161,6 @@ const NewBoard = () => {
         dash={[10, 5]}
         strokeWidth={5}
         stroke={ColorPalete.Line}
-        onDragStart={handleArrowDragStart}
       />
     );
   }
@@ -317,12 +288,8 @@ const NewBoard = () => {
               strokeWidth={5}
               stroke={ColorPalete.Line}
               draggable={true}
-              onDragStart={handleArrowDragStart}
             />
           ))}
-
-          {/*   
-          <SupportElement {...elementsProps} /> */}
         </Layer>
       </Stage>
 
