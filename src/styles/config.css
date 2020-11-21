@@ -57,7 +57,8 @@ button {
   line-height: 3.75rem;
 }
 
-input {
+input,
+textarea {
   margin: 1rem 0;
   padding: 1rem 2.5rem;
   outline: none;
