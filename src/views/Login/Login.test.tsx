@@ -36,14 +36,12 @@ describe("Tests for Landing.tsx", () => {
     const { getByTestId } = renderWrapper();
     const mockedPassword = "Abc102030!@#";
     const passwordInput = getByTestId("password-input") as HTMLInputElement;
-    // userEvent.type(passwordInput, passwordInput);
+
     fireEvent.change(passwordInput, { target: { value: mockedPassword } });
     expect(passwordInput.value).toStrictEqual(mockedPassword);
   });
 
   it("should fail trying to sign in with fictitious account", async () => {
-    // const alertSpy = spyOn(window, "alert").and.callFake(() => {});
-
     const cognitoAuthSpy = spyOn(cognito, "authenticate").and.callThrough();
 
     const { getByTestId, debug } = renderWrapper();
@@ -62,12 +60,6 @@ describe("Tests for Landing.tsx", () => {
 
     fireEvent.click(signInBtn);
 
-    // const alert = await screen.findByRole("alert");
-
-    console.log(">>> ❌ I have to check the alert but I can't");
-    // console.log(alert);
-
     expect(cognitoAuthSpy).toHaveBeenCalled();
-    // expect(alert).toBeTruthy();
   });
 });

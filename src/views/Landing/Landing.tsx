@@ -12,7 +12,6 @@ const Landing = () => {
 
   useEffect(() => {
     handleOnInitLanding();
-    // console.log(">>> isLoggedUser:", isLoggedUser);
   }, []);
 
   const handleOnInitLanding = () => {

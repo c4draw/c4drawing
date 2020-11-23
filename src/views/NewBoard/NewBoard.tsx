@@ -225,8 +225,6 @@ const NewBoard = () => {
   function handleNewBoadKeyDown(event: any) {
     const { key } = event;
 
-    // console.log(">>> key: ", key);
-
     if (key === "Escape") {
       setTool(ToolsEnum.None);
       setLineStart(undefined);
@@ -240,10 +238,6 @@ const NewBoard = () => {
 
   return (
     <div style={{ cursor: cursor.mode }} onKeyDown={handleNewBoadKeyDown}>
-      {/* <AbsoluteContainer position={{ top: 16, left: 16 }}>
-        <p>Tool: {tool}</p>
-      </AbsoluteContainer> */}
-
       <AbsoluteContainer position={{ left: 10, top: 10 }}>
         <ToolBox tool={tool} setTool={setTool} />
       </AbsoluteContainer>

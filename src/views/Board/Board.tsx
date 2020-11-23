@@ -1,20 +1,17 @@
-import "./styles.css";
+import './styles.css';
 
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { ActionType } from "types/actionType";
-import { TextualElementType } from "types/TextualElement";
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { ActionType } from 'types/actionType';
+import { TextualElementType } from 'types/TextualElement';
 
-import { ToolType } from "../../constants/toolType";
-import { ElementWhiteboardDrawing } from "../../types/elementWhiteboardDrawing";
-import ToolBox from "./ToolBox";
-import ToolsActions from "./ToolsActions";
-import { CanvasUtils } from "./Utils/CanvasUtils";
-import {
-  adjustElementCoordinates,
-  getElementAtPosition,
-} from "./Utils/ElementUtils";
-import MouseUtils from "./Utils/MouseUtils";
-import RoughUtils, { rough } from "./Utils/RoughUtils";
+import { ToolType } from '../../constants/toolType';
+import { ElementWhiteboardDrawing } from '../../types/elementWhiteboardDrawing';
+import ToolBox from './ToolBox';
+import ToolsActions from './ToolsActions';
+import { CanvasUtils } from './Utils/CanvasUtils';
+import { adjustElementCoordinates, getElementAtPosition } from './Utils/ElementUtils';
+import MouseUtils from './Utils/MouseUtils';
+import RoughUtils, { rough } from './Utils/RoughUtils';
 
 function Board() {
   type PointType = { x: number; y: number };
@@ -36,7 +33,6 @@ function Board() {
   const [showInput, setShowInput] = useState(false);
 
   useLayoutEffect(() => {
-    // const canvas = document.getElementById("canvas") as HTMLCanvasElement;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -142,12 +138,6 @@ function Board() {
         drawNewElement(event);
         break;
     }
-
-    // if (tool === ToolType.SELECTION) {
-    //   moveOrResizeSelectedElement(event);
-    // } else {
-    //   drawNewElement(event);
-    // }
   }
 
   function updateElementByAction(event: React.MouseEvent) {
@@ -176,13 +166,10 @@ function Board() {
     const safeY = event.clientY - mouseOffset.y;
     setMousePosition({ x: event.clientX, y: event.clientY });
     if (!showInput) setInputInfo({ ...inputInfo, x: safeX, y: safeY });
-    // if (showInput) setInputInfo({ ...inputInfo, x: safeX, y: safeY });
   }
 
   function handleOnMouseMove(event: React.MouseEvent) {
     updateMousePosition(event);
-    // console.clear();
-    // console.log(">>> inputRef: ", inputRef.current);
 
     MouseUtils.setMouseStyleByTool(tool, event, elements);
     updateElementByAction(event);
@@ -283,7 +270,6 @@ function Board() {
       />
       <ToolBox tool={tool} setTool={setTool} />
       <canvas
-        // id="canvas"
         ref={canvasRef}
         width={window.innerWidth}
         height={window.innerHeight}

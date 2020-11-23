@@ -77,10 +77,6 @@ const Login = () => {
             value={password}
             onChange={handlePasswordOnChange}
           />
-          {/* 
-          <Link to={RoutesPath.Board} className="forget-password">
-            esqueci minha senha
-          </Link> */}
 
           <div className="button-group">
             <button type="button" onClick={handleRegister}>
