@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Loading from 'views/Loading';
 
 import { RoutesPath } from './enums/routesPath';
@@ -14,7 +14,7 @@ const Register = lazy(() => import("./views/Register"));
 
 const Routes = () => {
   return (
-    <BrowserRouter>
+    <Router>
       <Suspense fallback={<Loading />}>
         <Switch>
           <Route path={RoutesPath.Landing} exact component={Landing} />
@@ -25,7 +25,7 @@ const Routes = () => {
           <Route path={RoutesPath.Confirmation} component={Confirmation} />
         </Switch>
       </Suspense>
-    </BrowserRouter>
+    </Router>
   );
 };
 

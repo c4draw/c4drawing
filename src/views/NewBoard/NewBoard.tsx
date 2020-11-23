@@ -9,8 +9,12 @@ import { ColorPalete } from './Enums/ColorPallete';
 import { ToolsEnum } from './Enums/ToolsEnum';
 import { IElementProps } from './Interfaces/ElementProps';
 import { CursorType } from './Types/CursorType';
+import { InteractionElementType } from './Types/InteractionElementType';
 import { KovaMouseEvent } from './Types/KonvaMouseEvent';
 import { PointType } from './Types/PointType';
+import { PrimaryElementType } from './Types/PrimaryElementType';
+import { SupportElementType } from './Types/SupportElementType';
+import { UserElementType } from './Types/UserElementType';
 import PrimaryElement from './UI/PrimaryElement';
 import SupportElement from './UI/SupportElement';
 import UserElement from './UI/UserElement';
@@ -20,27 +24,25 @@ const NewBoard = () => {
   const [isDrawingArrow, setIsDrawingArrow] = useState(false);
   const initialPosition: PointType = { x: 0, y: 0 };
 
-  const [cursor, setCursor] = useState<CursorType>({
+  const initialCursor = {
     position: initialPosition,
     mode: CursorModeEnum.Default,
-  });
+  };
+
+  const [cursor, setCursor] = useState<CursorType>(initialCursor);
 
   const [lineStart, setLineStart] = useState<PointType>();
 
-  type UserElementType = { id: number; x: number; y: number };
   const [userElements, setUserElements] = useState<UserElementType[]>([]);
 
-  type PrimaryElementType = { id: number; x: number; y: number };
   const [primaryElements, setPrimaryElements] = useState<PrimaryElementType[]>(
     []
   );
 
-  type SupportElementType = { id: number; x: number; y: number };
   const [supportElements, setSupportElements] = useState<SupportElementType[]>(
     []
   );
 
-  type InteractionElementType = { id: number; points: number[] };
   const [interactionElements, setInteractionElements] = useState<
     InteractionElementType[]
   >([]);
@@ -100,6 +102,7 @@ const NewBoard = () => {
         };
         setSupportElements([...supportElements, newSupport]);
         break;
+
       case ToolsEnum.Interaction:
         if (isDrawingArrow === false) {
           setIsDrawingArrow(true);
@@ -126,6 +129,7 @@ const NewBoard = () => {
           setLineStart(undefined);
         }
         break;
+
       default:
         break;
     }
@@ -202,7 +206,8 @@ const NewBoard = () => {
         break;
 
       case ToolsEnum.Interaction:
-        if (lineStart?.x) {
+        const isDrawing = Boolean(lineStart?.x);
+        if (isDrawing) {
           elementToRender = arrowDrawer({
             x: cursor.position.x,
             y: cursor.position.y,
@@ -220,11 +225,10 @@ const NewBoard = () => {
   function handleNewBoadKeyDown(event: any) {
     const { key } = event;
 
-    console.log(">>> key", key);
-
     if (key === "Escape") {
       setTool(ToolsEnum.None);
       setLineStart(undefined);
+      setIsDrawingArrow(false);
     }
   }
 
@@ -234,10 +238,6 @@ const NewBoard = () => {
 
   return (
     <div style={{ cursor: cursor.mode }} onKeyDown={handleNewBoadKeyDown}>
-      {/* <AbsoluteContainer position={{ top: 16, left: 16 }}>
-        <p>Tool: {tool}</p>
-      </AbsoluteContainer> */}
-
       <AbsoluteContainer position={{ left: 10, top: 10 }}>
         <ToolBox tool={tool} setTool={setTool} />
       </AbsoluteContainer>
