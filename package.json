@@ -18,8 +18,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "test:coverage": "CI=true npm test -- --env=jsdom --coverage",  
+    "test": "react-scripts test --env jest-environment-jsdom-fourteen",
+    "test:coverage": "CI=true npm test -- --env=jsdom --coverage",
     "eject": "react-scripts eject",
     "commit": "git-cz"
   },
@@ -49,7 +49,8 @@
     "@types/react-router-dom": "^5.1.6",
     "commitizen": "^4.2.1",
     "cz-conventional-changelog": "3.3.0",
-    "husky": "^4.3.0"
+    "husky": "^4.3.0",
+    "jest-environment-jsdom-fifteen": "^1.0.2"
   },
   "husky": {
     "hooks": {
