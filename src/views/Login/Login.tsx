@@ -1,10 +1,10 @@
-import "./styles.css";
+import './styles.css';
 
-import React, { SyntheticEvent, useState } from "react";
-import { Link, useHistory } from "react-router-dom";
-import cognito from "services/cognito";
+import React, { SyntheticEvent, useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
+import cognito from 'services/cognito';
 
-import { RoutesPath } from "../../enums/routesPath";
+import { RoutesPath } from '../../enums/routesPath';
 
 const Login = () => {
   const history = useHistory();
@@ -26,7 +26,11 @@ const Login = () => {
     history.push(RoutesPath.Board);
   };
 
-  const handleOnErrorAuth = (err: any) => {};
+  const handleOnErrorAuth = (err: any) => {
+    const defaultMessage = "Something isn't woking, sorry. Try again later.";
+    const { message = defaultMessage } = err;
+    alert(message);
+  };
 
   const handleRegister = () => {
     history.push(RoutesPath.Register);
@@ -56,6 +60,7 @@ const Login = () => {
             complicados.
           </p>
           <input
+            data-testid="email-input"
             type="email"
             required={true}
             placeholder="e-mail"
@@ -64,6 +69,7 @@ const Login = () => {
           />
 
           <input
+            data-testid="password-input"
             type="password"
             required={true}
             placeholder="senha"
@@ -71,16 +77,15 @@ const Login = () => {
             value={password}
             onChange={handlePasswordOnChange}
           />
-          {/* 
-          <Link to={RoutesPath.Board} className="forget-password">
-            esqueci minha senha
-          </Link> */}
 
           <div className="button-group">
             <button type="button" onClick={handleRegister}>
               registre-se
             </button>
-            <button type="submit">entrar</button>
+
+            <button type="submit" data-testid="sign-in-btn">
+              entrar
+            </button>
           </div>
         </form>
       </div>

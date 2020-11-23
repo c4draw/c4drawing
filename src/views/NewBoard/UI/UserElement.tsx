@@ -13,17 +13,6 @@ const UserElement: React.FC<IElementProps> = ({
   showTextInput,
 }) => {
   return (
-    // <Group
-    //   x={100}
-    //   y={100}
-    //   draggable
-    //   onMouseEnter={handleMouseEnter}
-    //   onMouseDown={handleMouseDown}
-    //   onMouseLeave={handleMouseLeave}
-    //   onDragStart={handleUserDragStart}
-    //   onDragMove={handleUserDragMove}
-    //   onDragEnd={handleUserDragEnd}
-    // >
     <GroupElement
       cursor={cursor}
       setCursor={setCursor}

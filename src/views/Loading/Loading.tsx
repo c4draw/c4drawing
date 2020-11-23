@@ -10,7 +10,7 @@ const Loading = () => {
   return (
     <div id="loading" className="fade-in">
       <div className="wrapper">
-        <h2>Loading...</h2>
+        <h2 data-testid="loading-title">Loading...</h2>
 
         <div className="rotate">
           <BsArrowRepeat color={iconColor} size={iconSize} />

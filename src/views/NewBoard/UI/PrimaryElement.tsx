@@ -12,14 +12,6 @@ const PrimaryElement: React.FC<IElementProps> = ({
   showTextInput,
   position,
 }) => {
-  // function handleTextMouseEnter(event: KovaMouseEvent) {
-  //   setCursor({ ...cursor, mode: CursorModeEnum.Text });
-  // }
-
-  // function handleTextMouseLeave(event: KovaMouseEvent) {
-  //   setCursor({ ...cursor, mode: CursorModeEnum.Default });
-  // }
-
   return (
     <GroupElement
       cursor={cursor}
